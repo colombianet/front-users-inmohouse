@@ -1,27 +1,19 @@
 <div class="login">
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login__form">
-    <h2 class="login__title">Iniciar sesión</h2>
+  <form class="login__card" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <h2 class="login__title">{{ texts.LOGIN_TITLE }}</h2>
 
-    <mat-form-field appearance="outline" class="login__field">
-      <mat-label>Correo electrónico</mat-label>
-      <input matInput placeholder="email@dominio.com" formControlName="email" />
-      <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-        Email inválido
-      </mat-error>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>{{ texts.EMAIL_LABEL }}</mat-label>
+      <input matInput formControlName="email" type="email" required />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="login__field">
-      <mat-label>Contraseña</mat-label>
-      <input matInput type="password" formControlName="password" />
-      <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-        La contraseña es obligatoria
-      </mat-error>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>{{ texts.PASSWORD_LABEL }}</mat-label>
+      <input matInput formControlName="password" type="password" required />
     </mat-form-field>
 
-    <button mat-flat-button color="primary" class="login__submit" [disabled]="loading || loginForm.invalid">
-      {{ loading ? 'Cargando...' : 'Ingresar' }}
+    <button mat-raised-button type="submit" color="primary" class="login__submit-button w-100">
+      {{ texts.LOGIN_BUTTON }}
     </button>
-
-    <p *ngIf="error" class="login__error">{{ error }}</p>
   </form>
 </div>

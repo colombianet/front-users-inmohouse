@@ -2,6 +2,8 @@ import { Component, inject, AfterViewInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AppRoutes } from '@core/constants/app.routes';
+import { UserRoles } from '@core/constants/app.roles';
 
 
 @Component({
@@ -27,12 +29,12 @@ export class DashboardComponent implements AfterViewInit {
 
       const decoded: any = jwtDecode(token);
 
-      const role = decoded.role || decoded.roles?.[0];
+      const role = decoded.roles?.[0];
 
       const routeMap: Record<string, string> = {
-        ROLE_ADMIN: '/dashboard/admin',
-        ROLE_AGENTE: '/dashboard/agente',
-        ROLE_CLIENTE: '/dashboard/cliente'
+        [UserRoles.ADMIN]: AppRoutes.ADMIN,
+        [UserRoles.ASESOR]: AppRoutes.ASESOR,
+        [UserRoles.CLIENTE]: AppRoutes.CLIENTE
       };
 
       const targetRoute = routeMap[role] || '/login';

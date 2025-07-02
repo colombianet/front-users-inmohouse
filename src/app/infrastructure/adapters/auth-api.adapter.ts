@@ -5,10 +5,13 @@ import { Observable } from 'rxjs';
 import { AuthGateway } from '@domain/gateways/auth.gateway';
 import { LoginRequest } from '@domain/models/login-request.model';
 import { LoginResponse } from '@domain/models/login-response.model';
+import { environment } from 'environments/environment';
+
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiAdapter implements AuthGateway {
-  private readonly BASE_URL = 'http://localhost:8080/api/auth';
+  private readonly BASE_URL = `${environment.apiBaseUrl}/auth`;
 
   constructor(private http: HttpClient) {}
 

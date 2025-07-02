@@ -9,6 +9,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoginRequest } from '@domain/models/login-request.model';
 import { LoginUserUseCase } from '@application/use-cases/login-user.usecase';
 import { AuthApiAdapter } from '@infrastructure/adapters/auth-api.adapter';
+import { AppTexts } from '@core/constants/app.texts';
+import { Router } from '@angular/router';
+import { AppRoutes } from '@core/constants/app.routes';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -29,8 +33,14 @@ export class LoginComponent {
   loginUseCase: LoginUserUseCase;
   loading = false;
   error: string | null = null;
+  texts = AppTexts;
 
-  constructor(private fb: FormBuilder, private auth: AuthApiAdapter) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthApiAdapter,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.loginUseCase = new LoginUserUseCase(this.auth);
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -48,8 +58,9 @@ export class LoginComponent {
 
     this.loginUseCase.execute(request).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.token);
-        window.location.href = '/dashboard'; // ⚠️ ajustaremos luego según roles
+        this.authService.setToken(res.token);
+        this.router.navigate([AppRoutes.DASHBOARD]);
+        this.router.navigate([AppRoutes.DASHBOARD]);
       },
       error: (err) => {
         this.loading = false;
