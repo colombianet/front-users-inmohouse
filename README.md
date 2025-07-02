@@ -1,27 +1,87 @@
-# InmohouseFront
+# 🏡 InmoHouse Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Aplicación desarrollada con Angular 17. Gestiona el acceso por roles, autentica usuarios con JWT, y conecta con un backend construido en Spring Boot. Sigue principios de Clean Architecture adaptados e implementa buenas prácticas visuales y estructurales.
 
-## Development server
+---
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## 🚀 Tecnologías utilizadas
 
-## Code scaffolding
+- Angular 17 (Standalone Components)
+- Angular Material
+- SCSS con metodología BEM
+- Autenticación con JWT
+- Spring Boot + MySQL (backend)
+- Responsive Design con media queries
+- Clean Architecture inspirada en Bancolombia
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+---
 
-## Build
+## 🔐 Autenticación
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Formulario con `ReactiveForms` y validación visual
+- Token JWT almacenado en `localStorage` mediante `AuthService`
+- Redirección automática post-login basada en rol (`DashboardComponent`)
+- Logout funcional con retroalimentación (`MatSnackBar`)
+- Roles soportados: `ROLE_ADMIN`, `ROLE_AGENTE`, `ROLE_CLIENTE`
 
-## Running unit tests
+---
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## 🛡️ Seguridad y navegación
 
-## Running end-to-end tests
+- `RoleGuard` protege rutas por rol usando el token decodificado
+- Vistas de error dedicadas:
+  - **403 - Acceso no autorizado**
+  - **404 - Página no encontrada**
+- Redirecciones automáticas desde `dashboard` hacia el dashboard por rol
+- `AuthService` expone nombre del usuario y rol desde el token
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+---
 
-## Further help
+## 📁 Estructura del proyecto
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+---
+
+## 📸 Funcionalidades destacadas
+
+- Diseño responsivo con Flexbox y Angular Material
+- Spinner de carga durante login
+- Feedback visual en errores de credenciales
+- Constantes desacopladas para textos y rutas
+- Login centralizado vía `LoginUserUseCase`
+
+---
+
+## 🧪 Credenciales de prueba
+
+> Estas pueden ajustarse según el backend configurado
+
+- **Admin:** `admin@mail.com` / `12345`
+- **Agente:** `agente@mail.com` / `12345`
+- **Cliente:** `cliente@mail.com` / `12345`
+
+---
+
+## ⚙️ Comandos Angular CLI
+
+```bash
+# Instalar dependencias
+npm install
+
+# Servidor de desarrollo
+npm start   # alias de ng serve
+
+# Build de producción
+ng build
+
+# Generar componentes
+ng generate component nombre-componente
+
+# Test unitarios
+ng test
+
+### Deploy y backend
+Este frontend está preparado para integrarse con un backend en Spring Boot (puerto típico: localhost:8080)
+
+Las rutas protegidas esperan tokens válidos con payload roles: [ROL] y nombre
+

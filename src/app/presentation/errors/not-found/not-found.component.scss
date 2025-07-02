@@ -1,0 +1,20 @@
+.not-found {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 2rem;
+  text-align: center;
+
+  &__title {
+    font-size: 2rem;
+    color: #f57c00;
+  }
+
+  &__message {
+    font-size: 1.2rem;
+    color: #555;
+  }
+}

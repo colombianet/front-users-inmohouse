@@ -30,6 +30,7 @@ export class AuthService {
   getRole(): string | null {
     const payload = this.getUserPayload();
     return payload?.roles?.[0] || null;
+    // return 'ROLE_DESCONOCIDO';
   }
 
   getNombre(): string | null {

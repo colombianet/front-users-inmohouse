@@ -3,5 +3,6 @@ export const AppRoutes = {
   DASHBOARD: '/dashboard',
   ADMIN: '/dashboard/admin',
   AGENTE: '/dashboard/agente',
-  CLIENTE: '/dashboard/cliente'
+  CLIENTE: '/dashboard/cliente',
+  UNAUTHORIZED: '/unauthorized'
 };
