@@ -2,6 +2,6 @@ export const AppRoutes = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
   ADMIN: '/dashboard/admin',
-  ASESOR: '/dashboard/agente',
+  AGENTE: '/dashboard/agente',
   CLIENTE: '/dashboard/cliente'
 };
