@@ -1,58 +1,65 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output, Inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { PropertyService } from '@infrastructure/services/property.service';
-import { Propiedad } from '@domain/models/propiedad.model';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+import { PropertyService, Propiedad } from '@infrastructure/services/property.service';
 
 @Component({
   selector: 'app-property-form',
   standalone: true,
+  templateUrl: './property-form.component.html',
+  styleUrls: ['./property-form.component.scss'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatButtonModule
-  ],
-  templateUrl: './property-form.component.html',
-  styleUrls: ['./property-form.component.scss']
+    MatOptionModule,
+    MatButtonModule,
+    MatIconModule
+  ]
 })
 export class PropertyFormComponent {
-  form = this.fb.group({
-    titulo: ['', Validators.required],
-    descripcion: ['', Validators.required],
-    tipo: ['', Validators.required],
-    precio: [null, [Validators.required, Validators.min(1)]],
-    ubicacion: ['', Validators.required],
-    estado: ['Disponible', Validators.required]
-  });
+  @Output() propiedadCreada = new EventEmitter<void>();
+  form: FormGroup;
 
-  constructor(private fb: FormBuilder, private service: PropertyService) {}
+  constructor(
+    private fb: FormBuilder,
+    private propertyService: PropertyService,
+    private dialogRef: MatDialogRef<PropertyFormComponent>
+  ) {
+    this.form = this.fb.group(
+      {
+        titulo: ['', [Validators.required, Validators.pattern(/\S+/)]],
+        descripcion: [''],
+        tipo: ['', Validators.required],
+        estado: ['', Validators.required],
+        ubicacion: ['', [Validators.required, Validators.pattern(/\S+/)]],
+        precio: [null, [Validators.required, Validators.min(0)]]
+      },
+      { updateOn: 'blur' }
+    );
 
-  publish(): void {
-  if (this.form.valid) {
-    const raw = this.form.getRawValue();
+  }
 
-    const propiedad: Propiedad = {
-      titulo: raw.titulo ?? '',
-      descripcion: raw.descripcion ?? '',
-      tipo: raw.tipo ?? '',
-      precio: raw.precio ?? 0,
-      ubicacion: raw.ubicacion ?? '',
-      estado: raw.estado ?? '',
-      agenteId: 2,
-      clienteId: null
-    };
+  guardar(): void {
+    if (this.form.invalid) return;
 
-    this.service.create(propiedad).subscribe(() => {
-      this.form.reset({ estado: 'Disponible' });
+    this.propertyService.create(this.form.value as Propiedad).subscribe(() => {
+      this.propiedadCreada.emit();
+      this.dialogRef.close(); // Cierra el modal al guardar
     });
   }
-}
 
+  cancelar(): void {
+    this.dialogRef.close(); // Cierra el modal al cancelar
+  }
 }
