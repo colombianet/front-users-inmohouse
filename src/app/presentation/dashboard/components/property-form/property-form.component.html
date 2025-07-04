@@ -8,9 +8,7 @@
     <mat-form-field appearance="outline" class="form-card__field">
       <mat-label>Título</mat-label>
       <input matInput formControlName="titulo" required />
-      <mat-error *ngIf="form.get('titulo')?.hasError('required')">
-        El título es obligatorio
-      </mat-error>
+      <mat-error *ngIf="form.get('titulo')?.hasError('required')">El título es obligatorio</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-card__field">
@@ -25,9 +23,7 @@
         <mat-option value="Casa">Casa</mat-option>
         <mat-option value="Local">Local</mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('tipo')?.hasError('required')">
-        Selecciona un tipo de propiedad
-      </mat-error>
+      <mat-error *ngIf="form.get('tipo')?.hasError('required')">Selecciona un tipo de propiedad</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-card__field">
@@ -37,28 +33,20 @@
         <mat-option value="Reservada">Reservada</mat-option>
         <mat-option value="Vendida">Vendida</mat-option>
       </mat-select>
-      <mat-error *ngIf="form.get('estado')?.hasError('required')">
-        Selecciona el estado
-      </mat-error>
+      <mat-error *ngIf="form.get('estado')?.hasError('required')">Selecciona el estado</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-card__field">
       <mat-label>Ubicación</mat-label>
       <input matInput formControlName="ubicacion" required />
-      <mat-error *ngIf="form.get('ubicacion')?.hasError('required')">
-        La ubicación es requerida
-      </mat-error>
+      <mat-error *ngIf="form.get('ubicacion')?.hasError('required')">La ubicación es requerida</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-card__field">
       <mat-label>Precio</mat-label>
       <input matInput type="number" formControlName="precio" required min="0" />
-      <mat-error *ngIf="form.get('precio')?.hasError('required')">
-        Debes indicar un precio
-      </mat-error>
-      <mat-error *ngIf="form.get('precio')?.hasError('min')">
-        El precio debe ser mayor o igual a 0
-      </mat-error>
+      <mat-error *ngIf="form.get('precio')?.hasError('required')">Debes indicar un precio</mat-error>
+      <mat-error *ngIf="form.get('precio')?.hasError('min')">El precio debe ser mayor o igual a 0</mat-error>
     </mat-form-field>
 
     <div class="form-card__actions">

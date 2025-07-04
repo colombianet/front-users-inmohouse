@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Inject } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,7 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 
 import { PropertyService, Propiedad } from '@infrastructure/services/property.service';
 
@@ -47,19 +47,23 @@ export class PropertyFormComponent {
       },
       { updateOn: 'blur' }
     );
-
   }
 
   guardar(): void {
     if (this.form.invalid) return;
 
-    this.propertyService.create(this.form.value as Propiedad).subscribe(() => {
+    const propiedad: Propiedad = {
+      ...this.form.value,
+      agenteId: undefined // El backend asigna el agente automáticamente según el token
+    };
+
+    this.propertyService.create(propiedad).subscribe(() => {
       this.propiedadCreada.emit();
-      this.dialogRef.close(); // Cierra el modal al guardar
+      this.dialogRef.close();
     });
   }
 
   cancelar(): void {
-    this.dialogRef.close(); // Cierra el modal al cancelar
+    this.dialogRef.close();
   }
 }

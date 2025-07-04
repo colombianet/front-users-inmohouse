@@ -11,7 +11,6 @@ import { LoginUserUseCase } from '@application/use-cases/login-user.usecase';
 import { AuthApiAdapter } from '@infrastructure/adapters/auth-api.adapter';
 import { AppTexts } from '@core/constants/app.texts';
 import { Router } from '@angular/router';
-import { AppRoutes } from '@core/constants/app.routes';
 import { AuthService } from '@core/services/auth.service';
 
 @Component({
@@ -59,12 +58,23 @@ export class LoginComponent {
     this.loginUseCase.execute(request).subscribe({
       next: (res) => {
         this.authService.setToken(res.token);
-        this.router.navigate([AppRoutes.DASHBOARD]);
-        this.router.navigate([AppRoutes.DASHBOARD]);
+
+        const roles = this.authService.getRoles().map(r => r.replace('ROLE_', ''));
+        const prioridad = ['ADMIN', 'AGENTE', 'CLIENTE'];
+        const rolPrincipal = prioridad.find(r => roles.includes(r));
+
+        if (rolPrincipal) {
+          this.authService.redireccionarPorRol();
+        } else {
+          this.authService.logout();
+          this.error = AppTexts.ERROR_ROLES;
+        }
+
+        this.loading = false;
       },
       error: (err) => {
         this.loading = false;
-        this.error = 'Credenciales incorrectas';
+        this.error = AppTexts.ERROR_CREDENTIALS;
         console.error(err);
       }
     });

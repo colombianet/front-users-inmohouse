@@ -9,12 +9,10 @@ export const RoleGuard = (requiredRole: string): CanActivateFn => {
     const router = inject(Router);
 
     const isLoggedIn = auth.isAuthenticated();
-    const userRole = auth.getRole();
-
-    const isAuthorized = isLoggedIn && userRole === requiredRole;
+    const roles = auth.getRoles();
+    const isAuthorized = isLoggedIn && roles.includes(requiredRole);
 
     if (!isAuthorized) {
-      // router.navigate([AppRoutes.LOGIN]);
       router.navigate([AppRoutes.UNAUTHORIZED]);
       return false;
     }
