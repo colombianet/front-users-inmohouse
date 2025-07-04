@@ -1,0 +1,48 @@
+@use 'variables' as *;
+
+.form-card {
+  padding: 1.5rem;
+  background-color: $color-surface;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 600px;
+
+  &__title {
+    font-size: $font-size-title;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  &__icon {
+    color: $color-text-muted;
+  }
+
+  &__field {
+    width: 100%;
+
+    mat-error {
+      font-size: $font-size-sm;
+      color: red;
+      margin-top: 0.25rem;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  &__errors {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: red;
+    font-size: $font-size-sm;
+    margin-bottom: 1rem;
+  }
+}

@@ -1,0 +1,53 @@
+@use 'variables' as *;
+
+.btn {
+  font-weight: 500;
+  text-transform: none;
+  border-radius: $border-radius;
+  padding: 0.5rem 1.25rem;
+  font-size: $font-size-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &--primary {
+    background-color: $color-primary;
+    color: white;
+
+    &:hover {
+      background-color: darken($color-primary, 5%);
+    }
+  }
+
+  &--warn {
+    background-color: $color-warn;
+    color: white;
+
+    &:hover {
+      background-color: darken($color-warn, 5%);
+    }
+  }
+
+  &--outline {
+    border: 1px solid $color-border;
+    background-color: transparent;
+    color: $color-text;
+
+    &:hover {
+      background-color: $color-hover-bg;
+    }
+  }
+
+  &--icon {
+    padding: 0.25rem;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+  }
+
+  &--full {
+    width: 100%;
+    justify-content: center;
+  }
+}

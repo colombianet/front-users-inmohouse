@@ -1,0 +1,47 @@
+@use 'variables' as *;
+
+.dashboard {
+  padding: $padding-section;
+
+  &__title {
+    font-size: $font-size-title;
+    margin-bottom: 1rem;
+  }
+
+  &__subtitle {
+    font-size: $font-size-subtitle;
+    color: $color-text-muted;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    button {
+      white-space: nowrap;
+    }
+  }
+
+  &__section {
+    margin-bottom: 2.5rem;
+
+    &--list {
+      overflow-x: auto;
+    }
+
+    &-title {
+      font-size: $font-size-subsection;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+  }
+}

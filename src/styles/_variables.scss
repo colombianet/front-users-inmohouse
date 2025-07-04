@@ -1,38 +1,45 @@
+// Tipografía base
 $font-family-base: 'Inter', 'Roboto', sans-serif;
 $font-size-base: 16px;
 $font-size-sm: 14px;
 $font-size-lg: 18px;
 
-// Colores base
-$color-admin-bg: #e3f2fd;
-$color-agente-bg: #f1f8e9;
-$color-cliente-bg: #fff3e0;
-$color-text-muted: #555;
-
-// Tipografía
+// Tipografía extendida
 $font-size-title: 2rem;
 $font-size-subtitle: 1.2rem;
 $font-size-subsection: 1.4rem;
 $font-size-content: 1rem;
 
-// Espaciado
-$padding-section: 2rem;
+// Colores de fondo por rol
+$color-admin-bg: #e3f2fd;
+$color-agente-bg: #f1f8e9;
+$color-cliente-bg: #fff3e0;
 
-// Estilo de superficie y hover
+// Colores de superficie y texto
 $color-surface: #ffffff;
 $color-hover-bg: #f5f5f5;
+$color-text-muted: #555;
+$color-text: #212121;
 
-// Bordes y sombras
-$border-radius: 8px;
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+// Colores para botones y acciones
+$color-primary: #1976d2;
+$color-warn: #d32f2f;
+$color-border: #e0e0e0;
 
-// 🎨 Login
+// Login
 $login-bg-color: #f5f5f5;
 $login-card-bg: #ffffff;
 $login-card-radius: 12px;
 $login-padding: 2rem;
 
+// Botones
 $btn-primary-bg: #1976d2;
 $btn-primary-text: #fff;
 
+// Inputs
 $input-label-color: #555;
+
+// Espaciado y bordes
+$padding-section: 2rem;
+$border-radius: 8px;
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);

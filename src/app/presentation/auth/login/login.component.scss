@@ -33,6 +33,14 @@
     font-weight: 600;
   }
 
+  &__error {
+    color: red;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+
   ::ng-deep label.mat-form-field-label {
     color: $input-label-color;
   }

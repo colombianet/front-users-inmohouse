@@ -1,0 +1,50 @@
+@use 'variables' as *;
+
+.dashboard__table {
+  width: 100%;
+  min-width: 600px;
+
+  th {
+    font-weight: 600;
+    color: $color-text-muted;
+  }
+
+  td {
+    font-size: $font-size-content;
+    vertical-align: middle;
+  }
+
+  tr {
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: $color-hover-bg;
+    }
+  }
+}
+
+.dashboard__estado {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: $border-radius;
+  text-transform: capitalize;
+  line-height: 1;
+  white-space: nowrap;
+
+  &--disponible {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &--reservada {
+    background-color: #fffde7;
+    color: #f9a825;
+  }
+
+  &--vendida {
+    background-color: #fbe9e7;
+    color: #d84315;
+  }
+}

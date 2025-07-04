@@ -1,0 +1,62 @@
+@use 'variables' as *;
+
+.dialog {
+  padding: 1.5rem;
+  background-color: $color-surface;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 600px;
+
+  &__title {
+    font-size: $font-size-title;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  &__content {
+    font-size: $font-size-content;
+    color: $color-text;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    button {
+      min-width: 100px;
+    }
+  }
+
+  &__icon {
+    font-size: 2rem;
+    color: $color-warn;
+    margin-right: 0.5rem;
+  }
+
+  &--confirm {
+    align-items: center;
+    text-align: center;
+
+    .dialog__icon {
+      font-size: 3rem;
+      color: $color-warn;
+    }
+
+    .dialog__content {
+      font-size: $font-size-subtitle;
+    }
+
+    .dialog__actions {
+      justify-content: center;
+    }
+  }
+}

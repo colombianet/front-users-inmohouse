@@ -1,17 +1,8 @@
 @use 'variables' as *;
+@use 'dashboard';
+@use 'dashboard-table';
 
-.dashboard {
-  padding: $padding-section;
-
-  &__title {
-    font-size: $font-size-title;
-    margin-bottom: 1rem;
-  }
-
-  &__subtitle {
-    font-size: $font-size-subtitle;
-    color: $color-text-muted;
-  }
-
-  &--admin { background-color: $color-admin-bg; }
+.dashboard--admin {
+  background-color: $color-admin-bg;
+  min-height: 100vh;
 }
