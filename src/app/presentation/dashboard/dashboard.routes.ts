@@ -9,8 +9,18 @@ export const DASHBOARD_ROUTES: Routes = [
   {
     path: 'admin',
     canActivate: [RoleGuard(UserRoles.ADMIN)],
-    loadComponent: () =>
-      import('./admin/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./admin/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+      },
+      {
+        path: 'estadisticas',
+        loadComponent: () =>
+          import('./components/estadisticas/estadisticas.component').then(m => m.EstadisticasComponent)
+      }
+    ]
   },
   {
     path: 'agente',

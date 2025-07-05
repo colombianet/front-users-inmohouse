@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -36,7 +36,8 @@ import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dia
     MatTooltipModule,
     MatTableModule,
     MatCardModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    RouterModule
   ]
 })
 export class AdminDashboardComponent implements OnInit, AfterViewInit {

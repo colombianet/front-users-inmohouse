@@ -1,0 +1,21 @@
+<div class="export-buttons">
+  <button
+    *ngIf="showExcel"
+    mat-icon-button
+    color="primary"
+    matTooltip="Exportar a Excel"
+    (click)="exportExcel()"
+    aria-label="Exportar a Excel">
+    <mat-icon>grid_on</mat-icon>
+  </button>
+
+  <button
+    *ngIf="showPdf"
+    mat-icon-button
+    color="accent"
+    matTooltip="Exportar a PDF"
+    (click)="exportPdf()"
+    aria-label="Exportar a PDF">
+    <mat-icon>picture_as_pdf</mat-icon>
+  </button>
+</div>

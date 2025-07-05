@@ -1,0 +1,19 @@
+<section class="estadisticas">
+  <mat-card>
+    <div class="estadisticas__header">
+      <h2 class="estadisticas__titulo">📊 Propiedades por Agente</h2>
+
+      <app-export-button [data]="exportData" fileName="propiedades_por_agente" [showExcel]="true" [showPdf]="true">
+      </app-export-button>
+    </div>
+
+    <div *ngIf="isLoading" class="estadisticas__loader">
+      <mat-spinner diameter="40" color="primary"></mat-spinner>
+    </div>
+
+    <ngx-charts-bar-horizontal *ngIf="!isLoading" @fadeIn [results]="propiedadesPorAgente" [scheme]="colorScheme"
+      [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true"
+      xAxisLabel="Cantidad" yAxisLabel="Agente">
+    </ngx-charts-bar-horizontal>
+  </mat-card>
+</section>
