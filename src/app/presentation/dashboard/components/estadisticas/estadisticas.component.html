@@ -1,19 +1,35 @@
 <section class="estadisticas">
-  <mat-card>
-    <div class="estadisticas__header">
-      <h2 class="estadisticas__titulo">📊 Propiedades por Agente</h2>
+  <div class="estadisticas__header">
+    <button mat-stroked-button color="primary" (click)="volver()" class="estadisticas__volver">
+      ← Volver
+    </button>
 
-      <app-export-button [data]="exportData" fileName="propiedades_por_agente" [showExcel]="true" [showPdf]="true">
-      </app-export-button>
-    </div>
+    <h2 class="estadisticas__titulo">📊 Propiedades por Agente</h2>
 
-    <div *ngIf="isLoading" class="estadisticas__loader">
-      <mat-spinner diameter="40" color="primary"></mat-spinner>
-    </div>
+    <app-export-button
+      [data]="exportData"
+      fileName="propiedades_por_agente"
+      [showExcel]="true"
+      [showPdf]="true">
+    </app-export-button>
+  </div>
 
-    <ngx-charts-bar-horizontal *ngIf="!isLoading" @fadeIn [results]="propiedadesPorAgente" [scheme]="colorScheme"
-      [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true"
-      xAxisLabel="Cantidad" yAxisLabel="Agente">
+  <div *ngIf="isLoading" class="estadisticas__loader">
+    <mat-spinner diameter="40" color="primary"></mat-spinner>
+  </div>
+
+  <div class="estadisticas__grafica" *ngIf="!isLoading" @fadeIn>
+    <ngx-charts-bar-horizontal
+      [results]="propiedadesPorAgente"
+      [scheme]="colorScheme"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="false"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [view]="[800, chartHeight]"
+      xAxisLabel="Cantidad"
+      yAxisLabel="Agente">
     </ngx-charts-bar-horizontal>
-  </mat-card>
+  </div>
 </section>

@@ -5,11 +5,10 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ExportService } from '@core/services/export.service';
 import { ExportButtonComponent } from '@shared/export-button/export-button.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
-
 
 @Component({
   selector: 'app-estadisticas',
@@ -42,7 +41,7 @@ export class EstadisticasComponent {
 
   constructor(
     private estadisticasService: EstadisticasService,
-    private exportService: ExportService
+    private router: Router
   ) {
     this.estadisticasService.getPropiedadesPorAgente().subscribe(data => {
       this.propiedadesPorAgente = data.map((item: any) => ({
@@ -57,23 +56,15 @@ export class EstadisticasComponent {
 
       this.isLoading = false;
     });
-
   }
 
-  exportarComoExcel(): void {
-    const datos = this.propiedadesPorAgente.map(item => ({
-      Agente: item.name,
-      Cantidad: item.value
-    }));
-    this.exportService.exportAsExcelFile(datos, 'propiedades_por_agente');
+  get chartHeight(): number {
+    const base = 60;
+    const padding = 100;
+    return this.propiedadesPorAgente.length * base + padding;
   }
 
-  exportarComoPdf(): void {
-    const datos = this.propiedadesPorAgente.map(item => ({
-      Agente: item.name,
-      Cantidad: item.value
-    }));
-    this.exportService.exportAsPdfFile(datos, 'propiedades_por_agente');
+  volver(): void {
+    this.router.navigate(['/dashboard/admin']);
   }
-
 }
