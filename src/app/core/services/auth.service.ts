@@ -6,6 +6,7 @@ import { AppRoutes } from '@core/constants/app.routes';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'token';
+  private readonly ROLES_CLAIM = 'roles';
 
   constructor(private router: Router) {}
 
@@ -22,8 +23,13 @@ export class AuthService {
     }
   }
 
+  // Validad que el token no haya expirado
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const payload = this.getUserPayload();
+    if (!payload) return false;
+
+    const now = Math.floor(Date.now() / 1000);
+    return payload.exp ? payload.exp > now : true;
   }
 
   getUserPayload(): any | null {
@@ -33,7 +39,7 @@ export class AuthService {
 
   getRoles(): string[] {
     const payload = this.getUserPayload();
-    return Array.isArray(payload?.roles) ? payload.roles : [];
+    return Array.isArray(payload?.[this.ROLES_CLAIM]) ? payload[this.ROLES_CLAIM] : [];
   }
 
   getRole(): string | null {
@@ -42,6 +48,10 @@ export class AuthService {
 
   getNombre(): string | null {
     return this.getUserPayload()?.nombre || null;
+  }
+
+  getEmail(): string | null {
+    return this.getUserPayload()?.email || null;
   }
 
   logout(): void {
@@ -68,7 +78,6 @@ export class AuthService {
     }
   }
 
-  // ✅ Métodos de ayuda para roles
   esAdmin(): boolean {
     return this.getRoles().includes('ROLE_ADMIN');
   }
