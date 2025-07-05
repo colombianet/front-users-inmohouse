@@ -17,11 +17,14 @@
     <mat-form-field appearance="outline" class="form-card__field">
       <mat-label>Contraseña</mat-label>
       <input matInput formControlName="password" type="password" [required]="data.modo === 'crear'" />
+      <mat-hint *ngIf="modoEdicion">
+        Si dejas este campo vacío, se conservará la contraseña actual.
+      </mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-card__field">
-      <mat-label>Roles</mat-label>
-      <mat-select formControlName="roles" multiple>
+      <mat-label>Rol</mat-label>
+      <mat-select formControlName="rol">
         <mat-option *ngFor="let rol of rolesDisponibles" [value]="rol">
           {{ rol.replace('ROLE_', '') }}
         </mat-option>
