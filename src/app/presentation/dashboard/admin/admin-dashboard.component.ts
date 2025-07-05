@@ -114,7 +114,9 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.refrescarUsuarios();
+      if (result) {
+        this.refrescarUsuarios();
+      }
     });
   }
 
@@ -125,7 +127,9 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.refrescarUsuarios();
+      if (result) {
+        this.refrescarUsuarios();
+      }
     });
   }
 
@@ -146,7 +150,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
 
   logout(): void {
     this.authService.logout();
