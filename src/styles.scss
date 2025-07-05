@@ -1,5 +1,7 @@
 /* Importa variables y mixins globales */
 @import 'styles/variables';
+@import 'styles/snackbars';
+
 
 /* Estilos base para html y body */
 html, body {
@@ -9,10 +11,5 @@ html, body {
   font-size: $font-size-base;
   background-color: #fafafa; // opcional: base neutra suave
   color: #212121; // texto principal
-}
-
-.snack-success {
-  background-color: #4caf50;
-  color: #fff;
 }
 
