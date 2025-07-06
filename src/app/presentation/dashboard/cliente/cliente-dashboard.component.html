@@ -11,48 +11,19 @@
     </div>
   </div>
 
-  <div class="dashboard__section dashboard__section--list">
-    <h2 class="dashboard__section-title">🏘️ Propiedades disponibles</h2>
-
-    <mat-card *ngIf="propiedades.length">
-      <table mat-table [dataSource]="propiedades" class="mat-elevation-z8 dashboard__table"
-        aria-label="Tabla de propiedades disponibles">
-        <ng-container matColumnDef="titulo">
-          <th mat-header-cell *matHeaderCellDef> Título </th>
-          <td mat-cell *matCellDef="let prop"> {{ prop.titulo }} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="tipo">
-          <th mat-header-cell *matHeaderCellDef> Tipo </th>
-          <td mat-cell *matCellDef="let prop"> {{ prop.tipo }} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="estado">
-          <th mat-header-cell *matHeaderCellDef> Estado </th>
-          <td mat-cell *matCellDef="let prop">
-            <span class="dashboard__estado dashboard__estado--{{ prop.estado.toLowerCase() }}">
-              {{ prop.estado.toLowerCase() | titlecase }}
-            </span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="ubicacion">
-          <th mat-header-cell *matHeaderCellDef> Ubicación </th>
-          <td mat-cell *matCellDef="let prop"> {{ prop.ubicacion }} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="precio">
-          <th mat-header-cell *matHeaderCellDef> Precio </th>
-          <td mat-cell *matCellDef="let prop"> ${{ prop.precio }} </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-    </mat-card>
-
-    <mat-card *ngIf="!propiedades.length">
-      <p>No hay propiedades disponibles en este momento.</p>
-    </mat-card>
+  <div class="dashboard__section dashboard__section--list dashboard__section--panel">
+    <app-dashboard-table
+      [title]="'🏘️ Propiedades disponibles'"
+      [dataSource]="dataSource"
+      [displayedColumns]="displayedColumns"
+      [columnDefs]="[
+        { key: 'titulo', label: 'Título' },
+        { key: 'tipo', label: 'Tipo' },
+        { key: 'estado', label: 'Estado' },
+        { key: 'ubicacion', label: 'Ubicación' },
+        { key: 'precio', label: 'Precio' }
+      ]"
+      [emptyMessage]="'No hay propiedades disponibles en este momento.'"
+    ></app-dashboard-table>
   </div>
 </section>

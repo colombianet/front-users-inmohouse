@@ -4,16 +4,24 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 import { AuthService } from '@core/services/auth.service';
 import { AppRoutes } from '@core/constants/app.routes';
 import { AppTexts } from '@core/constants/app.texts';
+
 import { PropertyService } from '@infrastructure/services/property.service';
+import { UserService } from '@infrastructure/services/user.service';
+
 import { PropertyFormComponent } from '../components/property-form/property-form.component';
+import { UserFormComponent } from '../components/user-form/user-form.component';
+import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
+
 import { Propiedad } from '@domain/models/propiedad.model';
-import { MatIconModule } from '@angular/material/icon';
+import { Usuario } from '@domain/models/user.model';
+import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
 
 @Component({
   selector: 'app-agente-dashboard',
@@ -27,20 +35,28 @@ import { MatIconModule } from '@angular/material/icon';
     MatDialogModule,
     MatTableModule,
     MatCardModule,
-    MatIconModule
+    MatIconModule,
+    DashboardTableComponent
   ]
 })
 export class AgenteDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_AGENTE;
   nombre: string | null;
   propiedades: Propiedad[] = [];
+  clientes: Usuario[] = [];
+
   displayedColumns: string[] = ['titulo', 'tipo', 'estado', 'ubicacion', 'precio'];
+  displayedClientColumns: string[] = ['nombre', 'email', 'acciones'];
+
+  dataSourceClientes = new MatTableDataSource<Usuario>();
+  dataSourcePropiedades = new MatTableDataSource<Propiedad>();
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
     private propertyService: PropertyService,
+    private userService: UserService,
     private dialog: MatDialog
   ) {
     this.nombre = this.authService.getNombre();
@@ -48,15 +64,26 @@ export class AgenteDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.refrescarListado();
+    this.refrescarClientes();
   }
 
   refrescarListado(): void {
     this.propertyService.listByAgente().subscribe({
-      next: (res) => this.propiedades = res as Propiedad[],
+      next: (res) => {
+        this.propiedades = res as Propiedad[];
+        this.dataSourcePropiedades.data = this.propiedades;
+      },
       error: () => this.snackBar.open(AppTexts.ERROR_CHARGE_PROPERTYS, 'Cerrar', {
         duration: 3000,
         panelClass: 'snack-error'
       })
+    });
+  }
+
+  refrescarClientes(): void {
+    this.userService.listClientes().subscribe(clientes => {
+      this.clientes = clientes.filter(c => this.esCliente(c));
+      this.dataSourceClientes.data = this.clientes;
     });
   }
 
@@ -74,6 +101,58 @@ export class AgenteDashboardComponent implements OnInit {
         duration: 3000
       });
     });
+  }
+
+  abrirFormularioCliente(): void {
+    const dialogRef = this.dialog.open(UserFormComponent, {
+      width: '600px',
+      data: { modo: 'crear' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.refrescarClientes();
+      }
+    });
+  }
+
+  editarCliente(cliente: Usuario): void {
+    const dialogRef = this.dialog.open(UserFormComponent, {
+      width: '600px',
+      data: { usuario: cliente, modo: 'editar' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.refrescarClientes();
+      }
+    });
+  }
+
+  eliminarCliente(id?: number): void {
+    if (id == null) return;
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { mensaje: AppTexts.CONFIRM_DELETE_USER }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.userService.delete(id).subscribe(() => {
+          this.refrescarClientes();
+          this.snackBar.open(AppTexts.DELETE_USER_SUCCESS, 'Cerrar', {
+            duration: 3000
+          });
+        });
+      }
+    });
+  }
+
+  esCliente(usuario: Usuario): boolean {
+    return usuario.roles.some(r =>
+      typeof r === 'string' ? r === 'ROLE_CLIENTE' : r.nombre === 'ROLE_CLIENTE'
+    );
   }
 
   logout(): void {

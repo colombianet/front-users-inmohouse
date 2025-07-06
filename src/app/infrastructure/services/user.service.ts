@@ -29,4 +29,8 @@ export class UserService {
   getById(id: number): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.url}/${id}`);
   }
+
+  listClientes(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.url}/clientes`);
+  }
 }

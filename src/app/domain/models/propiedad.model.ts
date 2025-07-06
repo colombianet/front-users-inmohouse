@@ -6,6 +6,6 @@ export interface Propiedad {
   precio: number;
   ubicacion: string;
   estado: string;
-  agenteId: number;
+  agenteId?: number;
   clienteId?: number | null;
 }

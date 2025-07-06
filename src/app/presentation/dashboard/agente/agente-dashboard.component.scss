@@ -6,3 +6,11 @@
   background-color: $color-admin-bg;
   min-height: 100vh;
 }
+
+.dashboard__section--panel {
+  background-color: #fafafa;
+  border: 1px solid $color-border;
+  border-radius: $border-radius;
+  padding: 1rem;
+}
+

@@ -9,6 +9,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Usuario } from '@domain/models/user.model';
 import { UserService } from '@infrastructure/services/user.service';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-user-form',
@@ -27,7 +28,7 @@ import { UserService } from '@infrastructure/services/user.service';
 })
 export class UserFormComponent {
   form: FormGroup;
-  rolesDisponibles = ['ROLE_ADMIN', 'ROLE_AGENTE', 'ROLE_CLIENTE'];
+  rolesDisponibles: string[];
   modoEdicion: boolean;
 
   constructor(
@@ -35,10 +36,15 @@ export class UserFormComponent {
     private userService: UserService,
     private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<UserFormComponent>,
+    private authService: AuthService,
     @Inject(MAT_DIALOG_DATA)
     public data: { usuario?: Usuario; modo: 'crear' | 'editar' }
   ) {
     this.modoEdicion = data.modo === 'editar';
+
+    this.rolesDisponibles = this.authService.esAgente()
+      ? ['ROLE_CLIENTE']
+      : ['ROLE_ADMIN', 'ROLE_AGENTE', 'ROLE_CLIENTE'];
 
     const rawRol = data.usuario?.roles?.[0];
     const rolActual = typeof rawRol === 'string'

@@ -16,56 +16,25 @@
     </div>
   </div>
 
-  <!-- 📋 Sección de propiedades -->
-  <div class="dashboard__section dashboard__section--list">
-    <h2 class="dashboard__section-title">📋 Propiedades registradas</h2>
-
-    <table mat-table [dataSource]="dataSourcePropiedades" class="mat-elevation-z8 dashboard__table">
-      <ng-container matColumnDef="titulo">
-        <th mat-header-cell *matHeaderCellDef> Título </th>
-        <td mat-cell *matCellDef="let prop"> {{ prop.titulo }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="tipo">
-        <th mat-header-cell *matHeaderCellDef> Tipo </th>
-        <td mat-cell *matCellDef="let prop"> {{ prop.tipo }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef> Estado </th>
-        <td mat-cell *matCellDef="let prop">
-          <span class="dashboard__estado dashboard__estado--{{ prop.estado.toLowerCase() }}">
-            {{ prop.estado.toLowerCase() | titlecase }}
-          </span>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="ubicacion">
-        <th mat-header-cell *matHeaderCellDef> Ubicación </th>
-        <td mat-cell *matCellDef="let prop"> {{ prop.ubicacion }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="precio">
-        <th mat-header-cell *matHeaderCellDef> Precio </th>
-        <td mat-cell *matCellDef="let prop"> ${{ prop.precio }} </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-
-    <mat-paginator #paginatorPropiedades [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"
-      showFirstLastButtons></mat-paginator>
-
-    <mat-card *ngIf="!propiedades.length">
-      <p>No hay propiedades registradas aún.</p>
-    </mat-card>
+  <!-- 📋 Tabla de propiedades -->
+  <div class="dashboard__section dashboard__section--list dashboard__section--panel">
+    <app-dashboard-table
+      [title]="'📋 Propiedades registradas'"
+      [dataSource]="dataSourcePropiedades"
+      [displayedColumns]="displayedColumns"
+      [columnDefs]="[
+        { key: 'titulo', label: 'Título' },
+        { key: 'tipo', label: 'Tipo' },
+        { key: 'estado', label: 'Estado' },
+        { key: 'ubicacion', label: 'Ubicación' },
+        { key: 'precio', label: 'Precio' }
+      ]"
+      [emptyMessage]="'No hay propiedades registradas aún.'"
+    ></app-dashboard-table>
   </div>
 
-  <!-- 👥 Sección de usuarios -->
-  <div class="dashboard__section dashboard__section--list">
-    <h2 class="dashboard__section-title">👥 Usuarios registrados</h2>
-
+  <!-- 👥 Tabla de usuarios -->
+  <div class="dashboard__section dashboard__section--list dashboard__section--panel">
     <div class="dashboard__actions">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormularioUsuario()">
         <mat-icon>add</mat-icon>
@@ -73,48 +42,28 @@
       </button>
     </div>
 
-    <table mat-table [dataSource]="dataSourceUsuarios" class="mat-elevation-z8 dashboard__table">
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef> Nombre </th>
-        <td mat-cell *matCellDef="let u"> {{ u.nombre }} </td>
-      </ng-container>
+    <ng-template #rolesTemplate let-row>
+      {{ formatearRoles(row.roles) }}
+    </ng-template>
 
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef> Email </th>
-        <td mat-cell *matCellDef="let u"> {{ u.email }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="roles">
-        <th mat-header-cell *matHeaderCellDef> Roles </th>
-        <td mat-cell *matCellDef="let u">
-          {{ formatearRoles(u.roles) }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef> Acciones </th>
-        <td mat-cell *matCellDef="let u">
-          <button mat-icon-button color="primary" (click)="editarUsuario(u)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="eliminarUsuario(u.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedUserColumns"></tr>
-    </table>
-
-    <mat-paginator #paginatorUsuarios [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"
-      showFirstLastButtons></mat-paginator>
-
-    <mat-card *ngIf="!usuarios.length">
-      <p>No hay usuarios registrados aún.</p>
-    </mat-card>
+    <app-dashboard-table
+      [title]="'👥 Usuarios registrados'"
+      [dataSource]="dataSourceUsuarios"
+      [displayedColumns]="displayedUserColumns"
+      [columnDefs]="[
+        { key: 'nombre', label: 'Nombre' },
+        { key: 'email', label: 'Email' },
+        { key: 'roles', label: 'Roles' }
+      ]"
+      [emptyMessage]="'No hay usuarios registrados aún.'"
+      [showActions]="true"
+      [customTemplates]="{ roles: rolesTemplate }"
+      (editar)="editarUsuario($event)"
+      (eliminar)="eliminarUsuario($event.id)"
+    ></app-dashboard-table>
   </div>
 
+  <!-- 📊 Estadísticas -->
   <div class="dashboard__section dashboard__section--estadisticas">
     <h2 class="dashboard__section-title">📊 Estadísticas</h2>
 
@@ -123,5 +72,4 @@
       Ver estadísticas de propiedades
     </button>
   </div>
-
 </section>
