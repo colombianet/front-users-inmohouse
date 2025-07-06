@@ -94,14 +94,14 @@ export class UserFormComponent {
             ? '✅ Usuario creado correctamente'
             : '✅ Usuario actualizado correctamente',
           'Cerrar',
-          { duration: 3000, panelClass: 'snack-success' }
+          { duration: 3000, panelClass: ['snack-success'] }
         );
         this.dialogRef.close(true);
       },
       error: () => {
         this.snackBar.open('❌ Error al guardar el usuario', 'Cerrar', {
           duration: 3000,
-          panelClass: 'snack-error'
+          panelClass: ['snack-error']
         });
       }
     });

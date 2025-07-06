@@ -102,7 +102,8 @@ export class AdminDashboardComponent implements OnInit {
       dialogRef.close();
 
       this.snackBar.open('✅ Propiedad creada correctamente', 'Cerrar', {
-        duration: 3000
+        duration: 3000,
+        panelClass: ['snack-success']
       });
     });
   }
@@ -151,7 +152,8 @@ export class AdminDashboardComponent implements OnInit {
         this.userService.delete(id).subscribe(() => {
           this.refrescarUsuarios();
           this.snackBar.open(AppTexts.DELETE_USER_SUCCESS, 'Cerrar', {
-            duration: 3000
+            duration: 3000,
+            panelClass: ['snack-success']
           });
         });
       }
@@ -163,7 +165,7 @@ export class AdminDashboardComponent implements OnInit {
     this.router.navigate([AppRoutes.LOGIN]);
     this.snackBar.open(AppTexts.LOGOUT, 'Cerrar', {
       duration: 3000,
-      panelClass: 'snack-success'
+      panelClass: ['snack-success']
     });
   }
 

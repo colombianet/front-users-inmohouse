@@ -75,7 +75,7 @@ export class AgenteDashboardComponent implements OnInit {
       },
       error: () => this.snackBar.open(AppTexts.ERROR_CHARGE_PROPERTYS, 'Cerrar', {
         duration: 3000,
-        panelClass: 'snack-error'
+        panelClass: ['snack-error']
       })
     });
   }
@@ -98,7 +98,8 @@ export class AgenteDashboardComponent implements OnInit {
       this.refrescarListado();
       dialogRef.close();
       this.snackBar.open(AppTexts.CONFORM_CREATE_PROPERTY, 'Cerrar', {
-        duration: 3000
+        duration: 3000,
+        panelClass: ['snack-success']
       });
     });
   }
@@ -142,7 +143,8 @@ export class AgenteDashboardComponent implements OnInit {
         this.userService.delete(id).subscribe(() => {
           this.refrescarClientes();
           this.snackBar.open(AppTexts.DELETE_USER_SUCCESS, 'Cerrar', {
-            duration: 3000
+            duration: 3000,
+            panelClass: ['snack-success']
           });
         });
       }
@@ -160,7 +162,7 @@ export class AgenteDashboardComponent implements OnInit {
     this.router.navigate([AppRoutes.LOGIN]);
     this.snackBar.open(AppTexts.LOGOUT, 'Cerrar', {
       duration: 3000,
-      panelClass: 'snack-success'
+      panelClass: ['snack-success']
     });
   }
 }

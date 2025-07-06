@@ -10,7 +10,7 @@ import { ExportService } from '@core/services/export.service';
   standalone: true,
   imports: [CommonModule, MatIconModule, MatTooltipModule, MatButtonModule],
   templateUrl: './export-button.component.html',
-  styleUrls: ['./export-button.component.scss']
+  styleUrls: ['./export-button.component.scss'],
 })
 export class ExportButtonComponent {
   @Input() data: any[] = [];

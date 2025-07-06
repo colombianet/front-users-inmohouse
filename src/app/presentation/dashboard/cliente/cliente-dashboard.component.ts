@@ -51,7 +51,7 @@ export class ClienteDashboardComponent implements OnInit {
       },
       error: () => this.snackBar.open(AppTexts.ERROR_CHARGE_PROPERTYS_AVAILABLES, 'Cerrar', {
         duration: 3000,
-        panelClass: 'snack-error'
+        panelClass: ['snack-error']
       })
     });
   }
@@ -61,7 +61,7 @@ export class ClienteDashboardComponent implements OnInit {
     this.router.navigate([AppRoutes.LOGIN]);
     this.snackBar.open(AppTexts.LOGOUT, 'Cerrar', {
       duration: 3000,
-      panelClass: 'snack-success'
+      panelClass: ['snack-success']
     });
   }
 }
