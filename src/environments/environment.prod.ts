@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.inmohouse.com/api',
+  apiBaseUrl: 'https://back-users-production.up.railway.app',
   appName: 'InmoHouse'
 };
