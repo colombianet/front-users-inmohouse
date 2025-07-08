@@ -10,3 +10,8 @@
   padding: 1rem;
 }
 
+@media (max-width: 768px) {
+  ::ng-deep .mat-mdc-paginator-range-label {
+    display: none !important;
+  }
+}

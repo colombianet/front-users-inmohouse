@@ -1,8 +1,66 @@
 @use 'variables' as *;
 
-.dashboard__section--panel {
-  background-color: #fafafa;
-  border: 1px solid $color-border;
-  border-radius: $border-radius;
-  padding: 1rem;
+.dashboard__table {
+  width: 100%;
+  overflow-x: auto;
+
+  th, td {
+    white-space: nowrap;
+    padding: 1rem;
+    text-align: left;
+  }
+
+  @media (max-width: 768px) {
+    th, td {
+      padding: 0.5rem;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+mat-paginator {
+  margin-top: 1rem;
+
+  .mat-paginator-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .mat-paginator-page-size {
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: space-between;
+      display: flex;
+    }
+  }
+
+  .mat-paginator-range-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    @media (max-width: 768px) {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+
+  // 👇 Oculta el rango de paginación en móviles con alta especificidad
+  .mat-paginator-range-actions .mat-paginator-range-label {
+    @media (max-width: 768px) {
+      display: none !important;
+      visibility: hidden;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+  }
 }

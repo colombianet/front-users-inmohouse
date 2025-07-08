@@ -4,14 +4,25 @@
   <div class="dashboard__header">
     <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
 
-    <div class="dashboard__actions">
-      <button mat-stroked-button color="warn" (click)="logout()">
-        Cerrar sesión
+    <div class="dashboard__actions dashboard__actions--right">
+      <button mat-icon-button class="btn btn--icon btn--warn" (click)="logout()" matTooltip="Cerrar sesión">
+        <mat-icon>logout</mat-icon>
       </button>
     </div>
   </div>
 
+  <!-- 🏘️ Propiedades disponibles -->
   <div class="dashboard__section dashboard__section--list dashboard__section--panel">
+    <ng-template #estadoTemplate let-row>
+      <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
+        {{ row.estado | estado }}
+      </span>
+    </ng-template>
+
+    <ng-template #precioTemplate let-row>
+      {{ row.precio | precioMoneda }}
+    </ng-template>
+
     <app-dashboard-table
       [title]="'🏘️ Propiedades disponibles'"
       [dataSource]="dataSource"
@@ -23,7 +34,8 @@
         { key: 'ubicacion', label: 'Ubicación' },
         { key: 'precio', label: 'Precio' }
       ]"
-      [emptyMessage]="'No hay propiedades disponibles en este momento.'"
-    ></app-dashboard-table>
+      [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+      [emptyMessage]="'No hay propiedades disponibles en este momento.'">
+    </app-dashboard-table>
   </div>
 </section>

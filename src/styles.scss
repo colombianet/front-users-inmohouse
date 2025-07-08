@@ -1,15 +1,19 @@
-/* Importa variables y mixins globales */
-@import 'styles/variables';
-@import 'styles/snackbars';
-
+@use 'styles/index';
+@use 'styles/variables' as vars;
 
 /* Estilos base para html y body */
 html, body {
   height: 100%;
   margin: 0;
-  font-family: $font-family-base;
-  font-size: $font-size-base;
-  background-color: #fafafa; // opcional: base neutra suave
-  color: #212121; // texto principal
+  font-family: vars.$font-family-base;
+  font-size: vars.$font-size-base;
+  background-color: #fafafa;
+  color: #212121;
 }
 
+/* ✅ Oculta el rango del paginador en móviles */
+@media (max-width: 768px) {
+  .mat-paginator-range-label {
+    display: none !important;
+  }
+}

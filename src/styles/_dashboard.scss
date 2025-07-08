@@ -3,6 +3,10 @@
 .dashboard {
   padding: $padding-section;
 
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
   &__title {
     font-size: $font-size-title;
     margin-bottom: 1rem;
@@ -25,9 +29,22 @@
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
 
     button {
       white-space: nowrap;
+    }
+
+    &--centered {
+      justify-content: center;
+    }
+
+    &--right {
+      justify-content: flex-end;
+    }
+
+    &--left {
+      justify-content: flex-start;
     }
   }
 
@@ -36,6 +53,13 @@
 
     &--list {
       overflow-x: auto;
+    }
+
+    &--panel {
+      background-color: $color-surface;
+      border-radius: $border-radius;
+      box-shadow: $shadow-sm;
+      padding: 1.5rem;
     }
 
     &-title {

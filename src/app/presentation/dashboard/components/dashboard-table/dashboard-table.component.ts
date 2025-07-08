@@ -14,6 +14,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
+import { EstadoPipe } from '@shared/pipes/estado.pipe';
+import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
+
 @Component({
   selector: 'app-dashboard-table',
   standalone: true,
@@ -25,7 +28,9 @@ import { MatCardModule } from '@angular/material/card';
     MatPaginatorModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    EstadoPipe,
+    PrecioMonedaPipe
   ]
 })
 export class DashboardTableComponent<T> implements AfterViewInit {

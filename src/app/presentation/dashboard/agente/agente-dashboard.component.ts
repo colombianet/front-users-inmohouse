@@ -22,6 +22,8 @@ import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dia
 import { Propiedad } from '@domain/models/propiedad.model';
 import { Usuario } from '@domain/models/user.model';
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
+import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
+import { EstadoPipe } from '@shared/pipes/estado.pipe';
 
 @Component({
   selector: 'app-agente-dashboard',
@@ -36,8 +38,10 @@ import { DashboardTableComponent } from '../components/dashboard-table/dashboard
     MatTableModule,
     MatCardModule,
     MatIconModule,
-    DashboardTableComponent
-  ]
+    DashboardTableComponent,
+    EstadoPipe,
+    PrecioMonedaPipe
+  ],
 })
 export class AgenteDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_AGENTE;

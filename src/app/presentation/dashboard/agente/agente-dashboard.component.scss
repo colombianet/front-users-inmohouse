@@ -1,11 +1,7 @@
 @use 'variables' as *;
 @use 'dashboard';
 @use 'dashboard-table';
-
-.dashboard--admin {
-  background-color: $color-admin-bg;
-  min-height: 100vh;
-}
+@use 'buttons';
 
 .dashboard__section--panel {
   background-color: #fafafa;
@@ -14,3 +10,8 @@
   padding: 1rem;
 }
 
+@media (max-width: 768px) {
+  ::ng-deep .mat-mdc-paginator-range-label {
+    display: none !important;
+  }
+}

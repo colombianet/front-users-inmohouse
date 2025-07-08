@@ -4,20 +4,30 @@
   <div class="dashboard__header">
     <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
 
-    <div class="dashboard__actions">
+    <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
         <mat-icon>add</mat-icon>
         Nueva propiedad
       </button>
 
-      <button mat-icon-button class="btn btn--icon btn--warn" (click)="logout()">
+      <button mat-icon-button class="btn btn--icon btn--warn" (click)="logout()" matTooltip="Cerrar sesión">
         <mat-icon>logout</mat-icon>
       </button>
     </div>
   </div>
 
-  <!-- 📋 Tabla de propiedades -->
+  <!-- 📋 Propiedades -->
   <div class="dashboard__section dashboard__section--list dashboard__section--panel">
+    <ng-template #estadoTemplate let-row>
+      <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
+        {{ row.estado | estado }}
+      </span>
+    </ng-template>
+
+    <ng-template #precioTemplate let-row>
+      {{ row.precio | precioMoneda }}
+    </ng-template>
+
     <app-dashboard-table
       [title]="'📋 Propiedades registradas'"
       [dataSource]="dataSourcePropiedades"
@@ -29,15 +39,16 @@
         { key: 'ubicacion', label: 'Ubicación' },
         { key: 'precio', label: 'Precio' }
       ]"
-      [emptyMessage]="'No hay propiedades registradas aún.'"
-    ></app-dashboard-table>
+      [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+      [emptyMessage]="'No hay propiedades registradas aún.'">
+    </app-dashboard-table>
   </div>
 
-  <!-- 👥 Tabla de usuarios -->
+  <!-- 👥 Usuarios -->
   <div class="dashboard__section dashboard__section--list dashboard__section--panel">
-    <div class="dashboard__actions">
+    <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormularioUsuario()">
-        <mat-icon>add</mat-icon>
+        <mat-icon>person_add</mat-icon>
         Nuevo usuario
       </button>
     </div>
@@ -59,15 +70,15 @@
       [showActions]="true"
       [customTemplates]="{ roles: rolesTemplate }"
       (editar)="editarUsuario($event)"
-      (eliminar)="eliminarUsuario($event.id)"
-    ></app-dashboard-table>
+      (eliminar)="eliminarUsuario($event.id)">
+    </app-dashboard-table>
   </div>
 
   <!-- 📊 Estadísticas -->
   <div class="dashboard__section dashboard__section--estadisticas">
     <h2 class="dashboard__section-title">📊 Estadísticas</h2>
 
-    <button mat-stroked-button routerLink="/dashboard/admin/estadisticas" class="btn btn--secondary">
+    <button mat-stroked-button routerLink="/dashboard/admin/estadisticas" class="btn btn--outline">
       <mat-icon>bar_chart</mat-icon>
       Ver estadísticas de propiedades
     </button>

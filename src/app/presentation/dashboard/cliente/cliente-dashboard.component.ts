@@ -12,6 +12,9 @@ import { AuthService } from '@core/services/auth.service';
 import { PropertyService } from '@infrastructure/services/property.service';
 import { Propiedad } from '@domain/models/propiedad.model';
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
+import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
+import { EstadoPipe } from '@shared/pipes/estado.pipe';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-cliente-dashboard',
@@ -24,8 +27,11 @@ import { DashboardTableComponent } from '../components/dashboard-table/dashboard
     MatSnackBarModule,
     MatCardModule,
     MatTableModule,
-    DashboardTableComponent
-  ]
+    DashboardTableComponent,
+    EstadoPipe,
+    PrecioMonedaPipe,
+    MatIconModule
+  ],
 })
 export class ClienteDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_CLIENTE;

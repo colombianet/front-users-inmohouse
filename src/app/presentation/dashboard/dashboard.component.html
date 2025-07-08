@@ -1,2 +1,24 @@
-<mat-spinner></mat-spinner>
-<p>Redirigiendo según tu rol...</p>
+<ng-template #estadoTemplate let-row>
+  <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
+    {{ row.estado | estado }}
+  </span>
+</ng-template>
+
+<ng-template #precioTemplate let-row>
+  {{ row.precio | precioMoneda }}
+</ng-template>
+
+<app-dashboard-table
+  [title]="'📋 Propiedades registradas'"
+  [dataSource]="dataSourcePropiedades"
+  [displayedColumns]="displayedColumns"
+  [columnDefs]="[
+    { key: 'titulo', label: 'Título' },
+    { key: 'tipo', label: 'Tipo' },
+    { key: 'estado', label: 'Estado' },
+    { key: 'ubicacion', label: 'Ubicación' },
+    { key: 'precio', label: 'Precio' }
+  ]"
+  [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+  [emptyMessage]="'No hay propiedades registradas aún.'">
+</app-dashboard-table>
