@@ -70,7 +70,7 @@
       [showActions]="true"
       [customTemplates]="{ roles: rolesTemplate }"
       (editar)="editarUsuario($event)"
-      (eliminar)="eliminarUsuario($event.id)">
+      (eliminar)="eliminarUsuario($event.id!)">
     </app-dashboard-table>
   </div>
 

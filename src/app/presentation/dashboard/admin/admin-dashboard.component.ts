@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -14,9 +14,6 @@ import { AuthService } from '@core/services/auth.service';
 import { AppRoutes } from '@core/constants/app.routes';
 import { AppTexts } from '@core/constants/app.texts';
 
-import { PropertyService } from '@infrastructure/services/property.service';
-import { UserService } from '@infrastructure/services/user.service';
-
 import { PropertyFormComponent } from '../components/property-form/property-form.component';
 import { UserFormComponent } from '../components/user-form/user-form.component';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
@@ -26,6 +23,14 @@ import { Usuario } from '@domain/models/user.model';
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
 import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
 import { EstadoPipe } from '@shared/pipes/estado.pipe';
+
+import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
+import { CrearPropiedadUseCase } from '@application/use-cases/propiedad/crear-propiedad.usecase';
+import { EliminarPropiedadUseCase } from '@application/use-cases/propiedad/eliminar-propiedad.usecase';
+
+import { UserService } from '@infrastructure/services/user.service';
+import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
+import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -47,38 +52,45 @@ import { EstadoPipe } from '@shared/pipes/estado.pipe';
     EstadoPipe,
     PrecioMonedaPipe,
   ],
+    providers: [
+    ListarPropiedadesUseCase,
+    CrearPropiedadUseCase,
+    EliminarPropiedadUseCase,
+    { provide: PropiedadRepository, useClass: PropiedadHttpService }
+  ],
 })
 export class AdminDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_ADMIN;
   nombre: string | null;
   propiedades: Propiedad[] = [];
   usuarios: Usuario[] = [];
-  esAgente = this.authService.esAgente();
-
   displayedColumns: string[] = ['titulo', 'tipo', 'estado', 'ubicacion', 'precio'];
   displayedUserColumns: string[] = ['nombre', 'email', 'roles', 'acciones'];
-
   dataSourcePropiedades = new MatTableDataSource<Propiedad>();
   dataSourceUsuarios = new MatTableDataSource<Usuario>();
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog,
-    private propertyService: PropertyService,
-    private userService: UserService
-  ) {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
+  private readonly listarPropiedades = inject(ListarPropiedadesUseCase);
+  private readonly crearPropiedad = inject(CrearPropiedadUseCase);
+  private readonly eliminarPropiedad = inject(EliminarPropiedadUseCase);
+  private readonly userService = inject(UserService);
+
+  esAgente = this.authService.esAgente();
+
+  constructor() {
     this.nombre = this.authService.getNombre();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.refrescarListado();
     this.refrescarUsuarios();
   }
 
-  refrescarListado() {
-    this.propertyService.list().subscribe(propiedades => {
+  refrescarListado(): void {
+    this.listarPropiedades.execute().subscribe(propiedades => {
       this.propiedades = propiedades;
       this.dataSourcePropiedades.data = propiedades;
     });
@@ -104,7 +116,6 @@ export class AdminDashboardComponent implements OnInit {
     dialogRef.componentInstance.propiedadCreada?.subscribe(() => {
       this.refrescarListado();
       dialogRef.close();
-
       this.snackBar.open('✅ Propiedad creada correctamente', 'Cerrar', {
         duration: 3000,
         panelClass: ['snack-success']
@@ -140,9 +151,7 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  eliminarUsuario(id?: number): void {
-    if (id == null) return;
-
+  eliminarUsuario(id: number): void {
     const usuario = this.usuarios.find(u => u.id === id);
     if (this.esAgente && usuario && !this.esCliente(usuario)) return;
 
@@ -164,6 +173,25 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
+  eliminarPropiedadDesdeTabla(id: number): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { mensaje: '¿Estás seguro de eliminar esta propiedad?' }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.eliminarPropiedad.execute(id).subscribe(() => {
+          this.snackBar.open('✅ Propiedad eliminada correctamente', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['snack-success']
+          });
+          this.refrescarListado();
+        });
+      }
+    });
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigate([AppRoutes.LOGIN]);
@@ -175,7 +203,6 @@ export class AdminDashboardComponent implements OnInit {
 
   formatearRoles(roles: any[]): string {
     if (!Array.isArray(roles)) return '';
-
     return roles
       .map(r => {
         const valor = typeof r === 'string' ? r : r?.nombre || r?.name;
