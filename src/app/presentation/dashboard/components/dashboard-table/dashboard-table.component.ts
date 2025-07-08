@@ -51,6 +51,7 @@ export class DashboardTableComponent<T> implements AfterViewInit {
   @Input() columnDefs!: { key: string; label: string }[];
   @Input() emptyMessage = 'No hay datos disponibles.';
   @Input() showActions = false;
+  @Input() showDelete = false;
   @Input() customTemplates: { [key: string]: TemplateRef<any> } = {};
 
   @Output() editar = new EventEmitter<T>();
@@ -64,9 +65,10 @@ export class DashboardTableComponent<T> implements AfterViewInit {
 
   private tryAttachPaginator(): void {
     if (this._dataSource && this.paginator) {
-      setTimeout(() => {
-        this._dataSource.paginator = this.paginator;
-      });
+      this._dataSource.paginator = this.paginator;
+    } else {
+      // Reintenta en el siguiente ciclo si aún no está disponible
+      setTimeout(() => this.tryAttachPaginator());
     }
   }
 

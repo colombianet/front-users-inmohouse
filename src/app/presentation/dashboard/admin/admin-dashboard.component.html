@@ -40,7 +40,10 @@
         { key: 'precio', label: 'Precio' }
       ]"
       [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
-      [emptyMessage]="'No hay propiedades registradas aún.'">
+      [emptyMessage]="'No hay propiedades registradas aún.'"
+      [showActions]="true"
+      [showDelete]="true"
+      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)">
     </app-dashboard-table>
   </div>
 
