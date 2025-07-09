@@ -46,6 +46,11 @@ export class AuthService {
     return this.getRoles()?.[0] || null;
   }
 
+  hasRole(rol: string): boolean {
+    const roles = this.getRoles();
+    return roles.includes(rol);
+  }
+
   getNombre(): string | null {
     return this.getUserPayload()?.nombre || null;
   }
