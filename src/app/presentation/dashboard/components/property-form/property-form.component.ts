@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, Inject, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,7 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { PropertyService, Propiedad } from '@infrastructure/services/property.service';
 
@@ -30,12 +30,18 @@ import { PropertyService, Propiedad } from '@infrastructure/services/property.se
 export class PropertyFormComponent {
   @Output() propiedadCreada = new EventEmitter<void>();
   form: FormGroup;
+  modo: 'crear' | 'editar';
+  propiedadOriginal?: Propiedad;
 
   constructor(
     private fb: FormBuilder,
     private propertyService: PropertyService,
-    private dialogRef: MatDialogRef<PropertyFormComponent>
+    private dialogRef: MatDialogRef<PropertyFormComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { propiedad?: Propiedad; modo: 'crear' | 'editar' }
   ) {
+    this.modo = data.modo;
+    this.propiedadOriginal = data.propiedad;
+
     this.form = this.fb.group(
       {
         titulo: ['', [Validators.required, Validators.pattern(/\S+/)]],
@@ -47,6 +53,10 @@ export class PropertyFormComponent {
       },
       { updateOn: 'blur' }
     );
+
+    if (this.modo === 'editar' && this.propiedadOriginal) {
+      this.form.patchValue(this.propiedadOriginal);
+    }
   }
 
   guardar(): void {
@@ -54,12 +64,17 @@ export class PropertyFormComponent {
 
     const propiedad: Propiedad = {
       ...this.form.value,
+      id: this.propiedadOriginal?.id,
       agenteId: undefined // El backend asigna el agente automáticamente según el token
     };
 
-    this.propertyService.create(propiedad).subscribe(() => {
+    const request$ = this.modo === 'editar'
+      ? this.propertyService.update(propiedad.id!, propiedad)
+      : this.propertyService.create(propiedad);
+
+    request$.subscribe(() => {
       this.propiedadCreada.emit();
-      this.dialogRef.close();
+      this.dialogRef.close(true);
     });
   }
 

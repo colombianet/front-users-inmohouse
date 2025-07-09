@@ -28,9 +28,16 @@ import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/lista
 import { CrearPropiedadUseCase } from '@application/use-cases/propiedad/crear-propiedad.usecase';
 import { EliminarPropiedadUseCase } from '@application/use-cases/propiedad/eliminar-propiedad.usecase';
 
-import { UserService } from '@infrastructure/services/user.service';
+import { ListarUsuariosUseCase } from '@application/use-cases/usuario/listar-usuarios.usecase';
+import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuario.usecase';
+import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
+import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
+
 import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
+import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.service';
+
 import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
+import { UsuarioRepository } from '@domain/repositories/usuario.repository';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -52,11 +59,16 @@ import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
     EstadoPipe,
     PrecioMonedaPipe,
   ],
-    providers: [
+  providers: [
     ListarPropiedadesUseCase,
     CrearPropiedadUseCase,
     EliminarPropiedadUseCase,
-    { provide: PropiedadRepository, useClass: PropiedadHttpService }
+    ListarUsuariosUseCase,
+    CrearUsuarioUseCase,
+    EditarUsuarioUseCase,
+    EliminarUsuarioUseCase,
+    { provide: PropiedadRepository, useClass: PropiedadHttpService },
+    { provide: UsuarioRepository, useClass: UsuarioHttpService }
   ],
 })
 export class AdminDashboardComponent implements OnInit {
@@ -65,7 +77,7 @@ export class AdminDashboardComponent implements OnInit {
   propiedades: Propiedad[] = [];
   usuarios: Usuario[] = [];
   displayedColumns: string[] = ['titulo', 'tipo', 'estado', 'ubicacion', 'precio'];
-  displayedUserColumns: string[] = ['nombre', 'email', 'roles', 'acciones'];
+  displayedUserColumns: string[] = ['nombre', 'email', 'roles'];
   dataSourcePropiedades = new MatTableDataSource<Propiedad>();
   dataSourceUsuarios = new MatTableDataSource<Usuario>();
 
@@ -73,10 +85,15 @@ export class AdminDashboardComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+
   private readonly listarPropiedades = inject(ListarPropiedadesUseCase);
   private readonly crearPropiedad = inject(CrearPropiedadUseCase);
   private readonly eliminarPropiedad = inject(EliminarPropiedadUseCase);
-  private readonly userService = inject(UserService);
+
+  private readonly listarUsuarios = inject(ListarUsuariosUseCase);
+  private readonly crearUsuario = inject(CrearUsuarioUseCase);
+  private readonly editarUsuarioUseCase = inject(EditarUsuarioUseCase);
+  private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
 
   esAgente = this.authService.esAgente();
 
@@ -97,7 +114,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   refrescarUsuarios(): void {
-    this.userService.list().subscribe(usuarios => {
+    this.listarUsuarios.execute().subscribe(usuarios => {
       this.usuarios = this.esAgente
         ? usuarios.filter(u => this.esCliente(u))
         : usuarios;
@@ -162,7 +179,7 @@ export class AdminDashboardComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        this.userService.delete(id).subscribe(() => {
+        this.eliminarUsuarioUseCase.execute(id).subscribe(() => {
           this.refrescarUsuarios();
           this.snackBar.open(AppTexts.DELETE_USER_SUCCESS, 'Cerrar', {
             duration: 3000,
@@ -216,5 +233,18 @@ export class AdminDashboardComponent implements OnInit {
     return usuario.roles.some(r =>
       typeof r === 'string' ? r === 'ROLE_CLIENTE' : r.nombre === 'ROLE_CLIENTE'
     );
+  }
+
+  editarPropiedad(propiedad: Propiedad): void {
+    const dialogRef = this.dialog.open(PropertyFormComponent, {
+      width: '600px',
+      data: { propiedad, modo: 'editar' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.refrescarListado();
+      }
+    });
   }
 }

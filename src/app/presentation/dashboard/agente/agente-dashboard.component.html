@@ -5,7 +5,7 @@
     <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
 
     <div class="dashboard__actions dashboard__actions--right">
-      <button mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
+      <button *ngIf="esAdmin" mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
         <mat-icon>add</mat-icon>
         Nueva propiedad
       </button>
@@ -28,18 +28,14 @@
       {{ row.precio | precioMoneda }}
     </ng-template>
 
-    <app-dashboard-table
-      [title]="'📋 Mis propiedades'"
-      [dataSource]="dataSourcePropiedades"
-      [displayedColumns]="displayedColumns"
-      [columnDefs]="[
+    <app-dashboard-table [title]="'📋 Mis propiedades'" [dataSource]="dataSourcePropiedades"
+      [displayedColumns]="displayedColumns" [columnDefs]="[
         { key: 'titulo', label: 'Título' },
         { key: 'tipo', label: 'Tipo' },
         { key: 'estado', label: 'Estado' },
         { key: 'ubicacion', label: 'Ubicación' },
         { key: 'precio', label: 'Precio' }
-      ]"
-      [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+      ]" [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
       [emptyMessage]="'No has creado propiedades aún.'">
     </app-dashboard-table>
   </div>
@@ -53,18 +49,16 @@
       </button>
     </div>
 
-    <app-dashboard-table
-      [title]="'👥 Mis clientes'"
-      [dataSource]="dataSourceClientes"
-      [displayedColumns]="displayedClientColumns"
-      [columnDefs]="[
+    <ng-template #rolesTemplate let-row>
+      {{ formatearRoles(row.roles) }}
+    </ng-template>
+
+    <app-dashboard-table [title]="'👥 Mis clientes'" [dataSource]="dataSourceClientes"
+      [displayedColumns]="displayedClientColumns" [columnDefs]="[
         { key: 'nombre', label: 'Nombre' },
-        { key: 'email', label: 'Email' }
-      ]"
-      [emptyMessage]="'No tienes clientes registrados aún.'"
-      [showActions]="true"
-      (editar)="editarCliente($event)"
-      (eliminar)="eliminarCliente($event.id)">
+        { key: 'email', label: 'Email' },
+        { key: 'roles', label: 'Roles' }
+      ]" [customTemplates]="{ roles: rolesTemplate }" [emptyMessage]="'No tienes clientes registrados aún.'"
+      [showActions]="true" [showDelete]="true" (editar)="editarCliente($event)" (eliminar)="eliminarCliente($event.id)">
     </app-dashboard-table>
   </div>
-</section>

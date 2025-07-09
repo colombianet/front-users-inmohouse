@@ -28,22 +28,17 @@
       {{ row.precio | precioMoneda }}
     </ng-template>
 
-    <app-dashboard-table
-      [title]="'📋 Propiedades registradas'"
-      [dataSource]="dataSourcePropiedades"
-      [displayedColumns]="displayedColumns"
-      [columnDefs]="[
+    <app-dashboard-table [title]="'📋 Propiedades registradas'" [dataSource]="dataSourcePropiedades"
+      [displayedColumns]="displayedColumns" [columnDefs]="[
         { key: 'titulo', label: 'Título' },
         { key: 'tipo', label: 'Tipo' },
         { key: 'estado', label: 'Estado' },
         { key: 'ubicacion', label: 'Ubicación' },
         { key: 'precio', label: 'Precio' }
-      ]"
-      [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
-      [emptyMessage]="'No hay propiedades registradas aún.'"
-      [showActions]="true"
-      [showDelete]="true"
-      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)">
+      ]" [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+      [emptyMessage]="'No hay propiedades registradas aún.'" [showActions]="true" [showDelete]="true"
+      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)"
+      (editar)="editarPropiedad($event)">
     </app-dashboard-table>
   </div>
 
@@ -60,19 +55,13 @@
       {{ formatearRoles(row.roles) }}
     </ng-template>
 
-    <app-dashboard-table
-      [title]="'👥 Usuarios registrados'"
-      [dataSource]="dataSourceUsuarios"
-      [displayedColumns]="displayedUserColumns"
-      [columnDefs]="[
-        { key: 'nombre', label: 'Nombre' },
-        { key: 'email', label: 'Email' },
-        { key: 'roles', label: 'Roles' }
-      ]"
-      [emptyMessage]="'No hay usuarios registrados aún.'"
-      [showActions]="true"
-      [customTemplates]="{ roles: rolesTemplate }"
-      (editar)="editarUsuario($event)"
+    <app-dashboard-table [title]="'👥 Usuarios registrados'" [dataSource]="dataSourceUsuarios"
+      [displayedColumns]="displayedUserColumns" [columnDefs]="[
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'email', label: 'Email' },
+    { key: 'roles', label: 'Roles' }
+  ]" [emptyMessage]="'No hay usuarios registrados aún.'" [showActions]="true" [showDelete]="true"
+      [customTemplates]="{ roles: rolesTemplate }" (editar)="editarUsuario($event)"
       (eliminar)="eliminarUsuario($event.id!)">
     </app-dashboard-table>
   </div>

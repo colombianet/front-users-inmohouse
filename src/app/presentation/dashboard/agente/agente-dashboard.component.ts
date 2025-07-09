@@ -48,9 +48,10 @@ export class AgenteDashboardComponent implements OnInit {
   nombre: string | null;
   propiedades: Propiedad[] = [];
   clientes: Usuario[] = [];
+  esAdmin: boolean = false;
 
   displayedColumns: string[] = ['titulo', 'tipo', 'estado', 'ubicacion', 'precio'];
-  displayedClientColumns: string[] = ['nombre', 'email', 'acciones'];
+  displayedClientColumns: string[] = ['nombre', 'email', 'roles'];
 
   dataSourceClientes = new MatTableDataSource<Usuario>();
   dataSourcePropiedades = new MatTableDataSource<Propiedad>();
@@ -67,6 +68,7 @@ export class AgenteDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.esAdmin = this.authService.hasRole('ROLE_ADMIN');
     this.refrescarListado();
     this.refrescarClientes();
   }
@@ -95,7 +97,8 @@ export class AgenteDashboardComponent implements OnInit {
     const dialogRef = this.dialog.open(PropertyFormComponent, {
       width: '600px',
       maxHeight: '90vh',
-      autoFocus: false
+      autoFocus: false,
+      data: { modo: 'crear' } // ✅ Se especifica el modo para evitar error de acceso a 'null'
     });
 
     dialogRef.componentInstance.propiedadCreada.subscribe(() => {
@@ -159,6 +162,18 @@ export class AgenteDashboardComponent implements OnInit {
     return usuario.roles.some(r =>
       typeof r === 'string' ? r === 'ROLE_CLIENTE' : r.nombre === 'ROLE_CLIENTE'
     );
+  }
+
+  formatearRoles(roles: any[]): string {
+    if (!Array.isArray(roles) || roles.length === 0) return '—';
+
+    return roles
+      .map(r => {
+        const valor = typeof r === 'string' ? r : r?.nombre || r?.name;
+        return typeof valor === 'string' ? valor.replace('ROLE_', '') : '';
+      })
+      .filter(r => r)
+      .join(', ');
   }
 
   logout(): void {
