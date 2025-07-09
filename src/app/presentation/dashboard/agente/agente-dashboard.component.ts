@@ -68,7 +68,7 @@ export class AgenteDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.esAdmin = this.authService.hasRole('ROLE_ADMIN');
+    this.esAdmin = this.authService.esAdmin();
     this.refrescarListado();
     this.refrescarClientes();
   }
