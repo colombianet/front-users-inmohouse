@@ -39,4 +39,8 @@ export class PropertyService {
     return this.http.get<Propiedad[]>(`${this.baseUrl}/cliente/disponibles`);
   }
 
+  update(id: number, propiedad: Propiedad): Observable<Propiedad> {
+    return this.http.put<Propiedad>(`${this.baseUrl}/propiedades/${id}`, propiedad);
+  }
+
 }
