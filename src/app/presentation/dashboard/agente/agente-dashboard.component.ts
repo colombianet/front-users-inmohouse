@@ -31,6 +31,9 @@ import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-
 import { LogoutUseCase } from '@application/use-cases/logout.usecase';
 import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
 import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
+import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
+import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
+import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
 
 @Component({
   selector: 'app-agente-dashboard',
@@ -55,7 +58,9 @@ import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
     CrearUsuarioUseCase,
     EditarUsuarioUseCase,
     EliminarUsuarioUseCase,
+    ListarPropiedadesUseCase,
     LogoutUseCase,
+    { provide: PropiedadRepository, useClass: PropiedadHttpService },
     { provide: UsuarioRepository, useClass: UsuarioHttpService },
     { provide: AuthSessionGateway, useClass: AuthStorageAdapter }
   ]
@@ -82,6 +87,7 @@ export class AgenteDashboardComponent implements OnInit {
   private readonly crearUsuarioUseCase = inject(CrearUsuarioUseCase);
   private readonly editarUsuarioUseCase = inject(EditarUsuarioUseCase);
   private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
+  private readonly listarPropiedadesUseCase = inject(ListarPropiedadesUseCase);
 
   constructor() {
     this.nombre = this.authSession.getNombre();
@@ -93,8 +99,9 @@ export class AgenteDashboardComponent implements OnInit {
   }
 
   refrescarListado(): void {
-    this.propertyService.listByAgente().subscribe({
+    this.listarPropiedadesUseCase.execute().subscribe({
       next: (propiedades) => {
+        console.log('->', propiedades)
         this.propiedades = propiedades;
         this.dataSourcePropiedades.data = propiedades;
       },

@@ -29,19 +29,79 @@
       flex: 1;
     }
 
+    .estadisticas__toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
     app-export-button {
       flex-shrink: 0;
     }
   }
 
+  .estadisticas__tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    button {
+      font-weight: 500;
+    }
+  }
+
+  .estadisticas__resumen {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .resumen-card {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      font-weight: 500;
+      background-color: #f7f9fc;
+      border: 1px solid #e0e0e0;
+      box-shadow: none;
+
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+  }
+
+  .estadisticas__grafica-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: #eef3f7;
+    border-left: 5px solid #2196f3;
+    font-weight: 600;
+
+    mat-icon {
+      color: #2196f3;
+    }
+
+    span {
+      font-size: 1rem;
+    }
+  }
+
   .estadisticas__grafica {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: auto; // ✅ Scroll horizontal
     margin-bottom: 2rem;
 
-    ngx-charts-bar-horizontal {
+    ngx-charts-bar-horizontal,
+    ngx-charts-bar-vertical {
       width: 100%;
-      min-width: 280px;
+      min-width: 600px; // ✅ Fuerza scroll si es menor a este ancho
     }
   }
 
@@ -56,8 +116,31 @@
         font-size: 1.2rem;
       }
 
-      .estadisticas__volver {
+      .estadisticas__volver,
+      .estadisticas__toggle {
         align-self: flex-start;
+      }
+    }
+
+    .estadisticas__resumen {
+      flex-direction: column;
+    }
+
+    .estadisticas__tabs {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .estadisticas__grafica {
+      margin-bottom: 2.5rem;
+
+      &::after {
+        content: '⬅️ Desliza para ver más contenido';
+        display: block;
+        font-size: 0.85rem;
+        text-align: center;
+        margin-top: 0.5rem;
+        color: #777;
       }
     }
   }

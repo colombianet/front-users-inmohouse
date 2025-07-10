@@ -4,14 +4,40 @@
       ← Volver
     </button>
 
-    <h2 class="estadisticas__titulo">📊 Propiedades por Agente</h2>
+    <h2 class="estadisticas__titulo">
+      📊 {{ vista === 'agente' ? 'Propiedades por Agente' : 'Propiedades por Tipo' }}
+    </h2>
+
+    <ng-container *ngIf="vista === 'agente'">
+      <button mat-button color="accent" (click)="toggleInactivos()" class="estadisticas__toggle">
+        <mat-icon>{{ mostrarInactivos ? 'visibility_off' : 'visibility' }}</mat-icon>
+        {{ mostrarInactivos ? 'Ocultar agentes sin propiedades' : 'Mostrar todos los agentes' }}
+      </button>
+    </ng-container>
 
     <app-export-button
       [data]="exportData"
-      fileName="propiedades_por_agente"
+      [fileName]="vista === 'agente' ? 'propiedades_por_agente' : 'propiedades_por_tipo'"
       [showExcel]="true"
       [showPdf]="true">
     </app-export-button>
+  </div>
+
+  <div class="estadisticas__tabs">
+    <button mat-button [color]="vista === 'agente' ? 'primary' : ''" (click)="cambiarVista('agente')">Agentes</button>
+    <button mat-button [color]="vista === 'tipo' ? 'primary' : ''" (click)="cambiarVista('tipo')">Tipos</button>
+  </div>
+
+  <div class="estadisticas__resumen" *ngIf="!isLoading">
+    <mat-card class="resumen-card">
+      <mat-icon>{{ vista === 'agente' ? 'group' : 'category' }}</mat-icon>
+      <p>Total {{ vista === 'agente' ? 'agentes' : 'tipos' }}: <strong>{{ exportData.length }}</strong></p>
+    </mat-card>
+
+    <mat-card class="resumen-card">
+      <mat-icon>home</mat-icon>
+      <p>Propiedades totales: <strong>{{ calcularTotal() }}</strong></p>
+    </mat-card>
   </div>
 
   <div *ngIf="isLoading" class="estadisticas__loader">
@@ -20,6 +46,7 @@
 
   <div class="estadisticas__grafica" *ngIf="!isLoading" @fadeIn>
     <ngx-charts-bar-horizontal
+      *ngIf="vista === 'agente'"
       [results]="propiedadesPorAgente"
       [scheme]="colorScheme"
       [xAxis]="true"
@@ -31,5 +58,20 @@
       xAxisLabel="Cantidad"
       yAxisLabel="Agente">
     </ngx-charts-bar-horizontal>
+
+    <ngx-charts-bar-vertical
+      *ngIf="vista === 'tipo'"
+      [results]="propiedadesPorTipo"
+      [scheme]="colorScheme"
+      [customColors]="coloresTipo"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="false"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [view]="[800, chartHeight]"
+      xAxisLabel="Cantidad"
+      yAxisLabel="Tipo">
+    </ngx-charts-bar-vertical>
   </div>
 </section>

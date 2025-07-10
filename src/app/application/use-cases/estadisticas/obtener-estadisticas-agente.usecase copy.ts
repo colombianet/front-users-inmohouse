@@ -7,7 +7,11 @@ import { Observable } from 'rxjs';
 export class ObtenerEstadisticasAgenteUseCase {
   constructor(private estadisticasApi: EstadisticasApiService) {}
 
-  execute(): Observable<EstadisticaAgente[]> {
-    return this.estadisticasApi.getPropiedadesPorAgente();
+  execute(opciones?: { incluirInactivos?: boolean }): Observable<EstadisticaAgente[]> {
+    const usarCompleto = opciones?.incluirInactivos ?? false;
+
+    return usarCompleto
+      ? this.estadisticasApi.getEstadisticasAgenteCompleto()
+      : this.estadisticasApi.getPropiedadesPorAgente();
   }
 }
