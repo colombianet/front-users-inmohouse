@@ -2,16 +2,3 @@
 @use 'dashboard';
 @use 'dashboard-table';
 @use 'buttons';
-
-.dashboard__section--panel {
-  background-color: #fafafa;
-  border: 1px solid $color-border;
-  border-radius: $border-radius;
-  padding: 1rem;
-}
-
-@media (max-width: 768px) {
-  ::ng-deep .mat-mdc-paginator-range-label {
-    display: none !important;
-  }
-}

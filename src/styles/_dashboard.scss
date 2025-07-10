@@ -1,71 +1,102 @@
 @use 'variables' as *;
 
 .dashboard {
-  padding: $padding-section;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     padding: 1rem;
   }
+}
 
-  &__title {
-    font-size: $font-size-title;
-    margin-bottom: 1rem;
+// Título principal del dashboard
+.dashboard__title {
+  font-size: $font-size-title;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    margin-top: 2rem;
   }
+}
 
-  &__subtitle {
-    font-size: $font-size-subtitle;
-    color: $color-text-muted;
-  }
+// Card de bienvenida con cabecera
+.dashboard__section--welcome {
+  margin-bottom: 2rem;
 
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-  }
-
-  &__actions {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-
-    button {
-      white-space: nowrap;
-    }
-
-    &--centered {
-      justify-content: center;
-    }
-
-    &--right {
-      justify-content: flex-end;
-    }
-
-    &--left {
-      justify-content: flex-start;
-    }
-  }
-
-  &__section {
+  @media (max-width: 768px) {
     margin-bottom: 2.5rem;
+  }
+}
 
-    &--list {
-      overflow-x: auto;
-    }
+// Cabecera con saludo y logout
+.dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-    &--panel {
-      background-color: $color-surface;
-      border-radius: $border-radius;
-      box-shadow: $shadow-sm;
-      padding: 1.5rem;
-    }
+// Texto de bienvenida
+.dashboard__subtitle {
+  font-size: $font-size-subtitle;
+  color: $color-text-muted;
 
-    &-title {
-      font-size: $font-size-subsection;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+// Botoneras dentro de las cards
+.dashboard__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  &--right {
+    margin-left: auto;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Títulos de cada sección con ícono + texto
+.dashboard__section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: $font-size-subsection;
+  font-weight: 600;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+  }
+
+  span,
+  mat-icon {
+    line-height: 1;
+    font-size: 1.2rem;
+  }
+}
+
+// Separación entre secciones del dashboard
+.dashboard__section {
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    margin-bottom: 2.5rem;
   }
 }

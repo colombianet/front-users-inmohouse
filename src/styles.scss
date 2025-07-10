@@ -1,19 +1,22 @@
 @use 'styles/index';
 @use 'styles/variables' as vars;
 
-/* Estilos base para html y body */
-html, body {
+/* 🌍 Estilos base */
+html,
+body {
   height: 100%;
   margin: 0;
   font-family: vars.$font-family-base;
   font-size: vars.$font-size-base;
-  background-color: #fafafa;
-  color: #212121;
+  background-color: vars.$color-panel-bg;
+  color: vars.$color-text;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* ✅ Oculta el rango del paginador en móviles */
+/* Oculta el rango del paginador en móviles */
 @media (max-width: 768px) {
-  .mat-paginator-range-label {
+  ::ng-deep .mat-mdc-paginator-range-label {
     display: none !important;
   }
 }

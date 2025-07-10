@@ -14,6 +14,7 @@ $font-size-content: 1rem;
 $color-admin-bg: #e3f2fd;
 $color-agente-bg: #f1f8e9;
 $color-cliente-bg: #fff3e0;
+$color-panel-bg: #fafafa;
 
 // Colores de superficie y texto
 $color-surface: #ffffff;
@@ -43,3 +44,11 @@ $input-label-color: #555;
 $padding-section: 2rem;
 $border-radius: 8px;
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+// Colores de fondo de panel según rol
+$panel-bg-admin: #e3f2fd;
+$panel-bg-agente: #f1f8e9;
+$panel-bg-cliente: #fff3e0;
+
+// Iconos en botones o secciones
+$icon-size: 24px;
