@@ -33,4 +33,8 @@ export class UserService {
   listClientes(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.url}/clientes`);
   }
+
+  listarPorAgente(idAgente: number): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.url}?agenteId=${idAgente}`);
+  }
 }

@@ -6,4 +6,5 @@ export abstract class UsuarioRepository {
   abstract crear(usuario: Usuario): Observable<Usuario>;
   abstract editar(usuario: Usuario): Observable<Usuario>;
   abstract eliminar(id: number): Observable<void>;
+  abstract listarClientes(): Observable<Usuario[]>;
 }

@@ -26,13 +26,6 @@
       📋 <span>Mis propiedades</span>
     </div>
 
-    <div class="dashboard__actions dashboard__actions--right" *ngIf="esAdmin">
-      <button mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
-        <mat-icon>add</mat-icon>
-        Nueva propiedad
-      </button>
-    </div>
-
     <ng-template #estadoTemplate let-row>
       <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
         {{ row.estado | estado }}
@@ -89,7 +82,7 @@
       [showActions]="true"
       [showDelete]="true"
       (editar)="editarCliente($event)"
-      (eliminar)="eliminarCliente($event.id)"
+      (eliminar)="eliminarCliente($event.id!)"
     >
     </app-dashboard-table>
   </div>

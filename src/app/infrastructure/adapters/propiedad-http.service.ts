@@ -26,4 +26,8 @@ export class PropiedadHttpService extends PropiedadRepository {
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/propiedades/${id}`);
   }
+
+  listarPropiedadesDisponibles(): Observable<Propiedad[]> {
+    return this.http.get<Propiedad[]>(`${this.baseUrl}/cliente/disponibles`);
+  }
 }

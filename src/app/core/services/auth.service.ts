@@ -23,7 +23,6 @@ export class AuthService {
     }
   }
 
-  // Validad que el token no haya expirado
   isAuthenticated(): boolean {
     const payload = this.getUserPayload();
     if (!payload) return false;
@@ -35,6 +34,11 @@ export class AuthService {
   getUserPayload(): any | null {
     const token = this.getToken();
     return token ? jwtDecode(token) : null;
+  }
+
+  getId(): number | null {
+    const payload = this.getUserPayload();
+    return payload?.id ?? null;
   }
 
   getRoles(): string[] {

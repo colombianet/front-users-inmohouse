@@ -28,4 +28,8 @@ export class UsuarioHttpService extends UsuarioRepository {
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  listarClientes(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.baseUrl}/clientes`);
+  }
 }

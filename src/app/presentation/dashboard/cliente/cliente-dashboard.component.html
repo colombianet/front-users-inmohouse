@@ -1,7 +1,7 @@
 <section class="dashboard dashboard--cliente">
   <h1 class="dashboard__title">{{ title }}</h1>
 
-  <!-- 👋 Bienvenida con botón de logout incluido -->
+  <!-- 👋 Bienvenida con logout en la cabecera -->
   <div class="dashboard__section dashboard__section--panel dashboard__section--welcome">
     <div class="dashboard__header">
       <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
@@ -20,10 +20,10 @@
     </div>
   </div>
 
-  <!-- 🏘️ Propiedades disponibles -->
+  <!-- 🏡 Propiedades disponibles -->
   <div class="dashboard__section dashboard__section--panel">
     <div class="dashboard__section-title">
-      🏘️ <span>Propiedades disponibles</span>
+      🏡 <span>Propiedades disponibles</span>
     </div>
 
     <ng-template #estadoTemplate let-row>
@@ -36,19 +36,14 @@
       {{ row.precio | precioMoneda }}
     </ng-template>
 
-    <app-dashboard-table
-      [dataSource]="dataSource"
-      [displayedColumns]="displayedColumns"
-      [columnDefs]="[
+    <app-dashboard-table [dataSource]="dataSource" [displayedColumns]="displayedColumns" [columnDefs]="[
         { key: 'titulo', label: 'Título' },
         { key: 'tipo', label: 'Tipo' },
         { key: 'estado', label: 'Estado' },
         { key: 'ubicacion', label: 'Ubicación' },
         { key: 'precio', label: 'Precio' }
-      ]"
-      [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
-      [emptyMessage]="'No hay propiedades disponibles en este momento.'"
-    >
+      ]" [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+      [emptyMessage]="'No hay propiedades disponibles en este momento.'">
     </app-dashboard-table>
   </div>
 </section>

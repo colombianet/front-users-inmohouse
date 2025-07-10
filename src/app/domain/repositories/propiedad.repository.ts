@@ -5,4 +5,5 @@ export abstract class PropiedadRepository {
   abstract listar(): Observable<Propiedad[]>;
   abstract crear(propiedad: Propiedad): Observable<Propiedad>;
   abstract eliminar(id: number): Observable<void>;
+  abstract listarPropiedadesDisponibles(): Observable<Propiedad[]>;
 }
