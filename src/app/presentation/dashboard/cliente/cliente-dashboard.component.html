@@ -1,18 +1,31 @@
 <section class="dashboard dashboard--cliente">
   <h1 class="dashboard__title">{{ title }}</h1>
 
-  <div class="dashboard__header">
-    <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
+  <!-- 👋 Bienvenida con botón de logout incluido -->
+  <div class="dashboard__section dashboard__section--panel dashboard__section--welcome">
+    <div class="dashboard__header">
+      <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
 
-    <div class="dashboard__actions dashboard__actions--right">
-      <button mat-icon-button class="btn btn--icon btn--warn" (click)="logout()" matTooltip="Cerrar sesión">
-        <mat-icon>logout</mat-icon>
-      </button>
+      <div class="dashboard__actions dashboard__actions--right">
+        <button
+          mat-icon-button
+          class="btn btn--icon btn--warn"
+          (click)="logout()"
+          matTooltip="Cerrar sesión"
+          aria-label="Cerrar sesión"
+        >
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- 🏘️ Propiedades disponibles -->
-  <div class="dashboard__section dashboard__section--list dashboard__section--panel">
+  <div class="dashboard__section dashboard__section--panel">
+    <div class="dashboard__section-title">
+      🏘️ <span>Propiedades disponibles</span>
+    </div>
+
     <ng-template #estadoTemplate let-row>
       <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
         {{ row.estado | estado }}
@@ -24,7 +37,6 @@
     </ng-template>
 
     <app-dashboard-table
-      [title]="'🏘️ Propiedades disponibles'"
       [dataSource]="dataSource"
       [displayedColumns]="displayedColumns"
       [columnDefs]="[
@@ -35,7 +47,8 @@
         { key: 'precio', label: 'Precio' }
       ]"
       [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
-      [emptyMessage]="'No hay propiedades disponibles en este momento.'">
+      [emptyMessage]="'No hay propiedades disponibles en este momento.'"
+    >
     </app-dashboard-table>
   </div>
 </section>

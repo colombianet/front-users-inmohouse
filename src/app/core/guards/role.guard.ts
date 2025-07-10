@@ -1,15 +1,17 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
 import { AppRoutes } from '@core/constants/app.routes';
+import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
+import { ValidarSesionUseCase } from '@application/use-cases/validar-sesion.usecase';
 
 export const RoleGuard = (requiredRole: string): CanActivateFn => {
   return () => {
-    const auth = inject(AuthService);
     const router = inject(Router);
+    const authAdapter = inject(AuthStorageAdapter);
+    const validarSesion = new ValidarSesionUseCase(authAdapter);
 
-    const isLoggedIn = auth.isAuthenticated();
-    const userRoles = auth.getRoles();
+    const isLoggedIn = validarSesion.execute();
+    const userRoles = authAdapter.getRoles();
 
     if (!isLoggedIn) {
       router.navigate([AppRoutes.LOGIN]);

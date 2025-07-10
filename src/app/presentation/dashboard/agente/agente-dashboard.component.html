@@ -1,23 +1,38 @@
-<section class="dashboard dashboard--admin">
+<section class="dashboard dashboard--agente">
   <h1 class="dashboard__title">{{ title }}</h1>
 
-  <div class="dashboard__header">
-    <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
+  <!-- 👋 Bienvenida con logout en la cabecera -->
+  <div class="dashboard__section dashboard__section--panel dashboard__section--welcome">
+    <div class="dashboard__header">
+      <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
 
-    <div class="dashboard__actions dashboard__actions--right">
-      <button *ngIf="esAdmin" mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
-        <mat-icon>add</mat-icon>
-        Nueva propiedad
-      </button>
-
-      <button mat-icon-button class="btn btn--icon btn--warn" (click)="logout()" matTooltip="Cerrar sesión">
-        <mat-icon>logout</mat-icon>
-      </button>
+      <div class="dashboard__actions dashboard__actions--right">
+        <button
+          mat-icon-button
+          class="btn btn--icon btn--warn"
+          (click)="logout()"
+          matTooltip="Cerrar sesión"
+          aria-label="Cerrar sesión"
+        >
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- 📋 Propiedades -->
-  <div class="dashboard__section dashboard__section--list dashboard__section--panel">
+  <div class="dashboard__section dashboard__section--panel">
+    <div class="dashboard__section-title">
+      📋 <span>Mis propiedades</span>
+    </div>
+
+    <div class="dashboard__actions dashboard__actions--right" *ngIf="esAdmin">
+      <button mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
+        <mat-icon>add</mat-icon>
+        Nueva propiedad
+      </button>
+    </div>
+
     <ng-template #estadoTemplate let-row>
       <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
         {{ row.estado | estado }}
@@ -28,20 +43,28 @@
       {{ row.precio | precioMoneda }}
     </ng-template>
 
-    <app-dashboard-table [title]="'📋 Mis propiedades'" [dataSource]="dataSourcePropiedades"
-      [displayedColumns]="displayedColumns" [columnDefs]="[
+    <app-dashboard-table
+      [dataSource]="dataSourcePropiedades"
+      [displayedColumns]="displayedColumns"
+      [columnDefs]="[
         { key: 'titulo', label: 'Título' },
         { key: 'tipo', label: 'Tipo' },
         { key: 'estado', label: 'Estado' },
         { key: 'ubicacion', label: 'Ubicación' },
         { key: 'precio', label: 'Precio' }
-      ]" [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
-      [emptyMessage]="'No has creado propiedades aún.'">
+      ]"
+      [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+      [emptyMessage]="'No has creado propiedades aún.'"
+    >
     </app-dashboard-table>
   </div>
 
   <!-- 👥 Clientes -->
-  <div class="dashboard__section dashboard__section--list dashboard__section--panel">
+  <div class="dashboard__section dashboard__section--panel">
+    <div class="dashboard__section-title">
+      👥 <span>Mis clientes</span>
+    </div>
+
     <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormularioCliente()">
         <mat-icon>person_add</mat-icon>
@@ -53,12 +76,21 @@
       {{ formatearRoles(row.roles) }}
     </ng-template>
 
-    <app-dashboard-table [title]="'👥 Mis clientes'" [dataSource]="dataSourceClientes"
-      [displayedColumns]="displayedClientColumns" [columnDefs]="[
+    <app-dashboard-table
+      [dataSource]="dataSourceClientes"
+      [displayedColumns]="displayedClientColumns"
+      [columnDefs]="[
         { key: 'nombre', label: 'Nombre' },
         { key: 'email', label: 'Email' },
         { key: 'roles', label: 'Roles' }
-      ]" [customTemplates]="{ roles: rolesTemplate }" [emptyMessage]="'No tienes clientes registrados aún.'"
-      [showActions]="true" [showDelete]="true" (editar)="editarCliente($event)" (eliminar)="eliminarCliente($event.id)">
+      ]"
+      [customTemplates]="{ roles: rolesTemplate }"
+      [emptyMessage]="'No tienes clientes registrados aún.'"
+      [showActions]="true"
+      [showDelete]="true"
+      (editar)="editarCliente($event)"
+      (eliminar)="eliminarCliente($event.id)"
+    >
     </app-dashboard-table>
   </div>
+</section>

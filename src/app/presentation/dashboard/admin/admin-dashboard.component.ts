@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -10,8 +10,6 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
-import { AuthService } from '@core/services/auth.service';
-import { AppRoutes } from '@core/constants/app.routes';
 import { AppTexts } from '@core/constants/app.texts';
 
 import { PropertyFormComponent } from '../components/property-form/property-form.component';
@@ -33,11 +31,15 @@ import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuari
 import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
 
+import { LogoutUseCase } from '@application/use-cases/logout.usecase';
+
 import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
 import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.service';
+import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
 
 import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
 import { UsuarioRepository } from '@domain/repositories/usuario.repository';
+import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -67,8 +69,10 @@ import { UsuarioRepository } from '@domain/repositories/usuario.repository';
     CrearUsuarioUseCase,
     EditarUsuarioUseCase,
     EliminarUsuarioUseCase,
+    LogoutUseCase,
     { provide: PropiedadRepository, useClass: PropiedadHttpService },
-    { provide: UsuarioRepository, useClass: UsuarioHttpService }
+    { provide: UsuarioRepository, useClass: UsuarioHttpService },
+    { provide: AuthSessionGateway, useClass: AuthStorageAdapter }
   ],
 })
 export class AdminDashboardComponent implements OnInit {
@@ -81,24 +85,21 @@ export class AdminDashboardComponent implements OnInit {
   dataSourcePropiedades = new MatTableDataSource<Propiedad>();
   dataSourceUsuarios = new MatTableDataSource<Usuario>();
 
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  private readonly logoutUseCase = inject(LogoutUseCase);
+  private readonly authSession = inject(AuthStorageAdapter);
 
   private readonly listarPropiedades = inject(ListarPropiedadesUseCase);
-  private readonly crearPropiedad = inject(CrearPropiedadUseCase);
   private readonly eliminarPropiedad = inject(EliminarPropiedadUseCase);
 
   private readonly listarUsuarios = inject(ListarUsuariosUseCase);
-  private readonly crearUsuario = inject(CrearUsuarioUseCase);
-  private readonly editarUsuarioUseCase = inject(EditarUsuarioUseCase);
   private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
 
-  esAgente = this.authService.esAgente();
+  esAgente = this.authSession.esAgente();
 
   constructor() {
-    this.nombre = this.authService.getNombre();
+    this.nombre = this.authSession.getNombre();
   }
 
   ngOnInit(): void {
@@ -127,7 +128,8 @@ export class AdminDashboardComponent implements OnInit {
     const dialogRef = this.dialog.open(PropertyFormComponent, {
       width: '600px',
       maxHeight: '90vh',
-      autoFocus: false
+      autoFocus: false,
+      data: { modo: 'crear' }
     });
 
     dialogRef.componentInstance.propiedadCreada?.subscribe(() => {
@@ -210,8 +212,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate([AppRoutes.LOGIN]);
+    this.logoutUseCase.execute();
     this.snackBar.open(AppTexts.LOGOUT, 'Cerrar', {
       duration: 3000,
       panelClass: ['snack-success']

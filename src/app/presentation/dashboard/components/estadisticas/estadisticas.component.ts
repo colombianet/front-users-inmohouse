@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EstadisticasService } from '@core/services/estadisticas.service';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +8,8 @@ import { ExportButtonComponent } from '@shared/export-button/export-button.compo
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { EstadisticaAgente } from '@domain/models/estadistica.model';
+import { ObtenerEstadisticasAgenteUseCase } from '@application/use-cases/obtener-estadisticas-agente/obtener-estadisticas-agente.usecase';
 
 @Component({
   selector: 'app-estadisticas',
@@ -34,24 +35,24 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ]
 })
 export class EstadisticasComponent {
-  propiedadesPorAgente: any[] = [];
-  colorScheme = 'vivid';
+  propiedadesPorAgente: { name: string; value: number }[] = [];
   exportData: { Agente: string; Cantidad: number }[] = [];
   isLoading = true;
+  colorScheme = 'vivid';
 
   constructor(
-    private estadisticasService: EstadisticasService,
+    private obtenerEstadisticas: ObtenerEstadisticasAgenteUseCase,
     private router: Router
   ) {
-    this.estadisticasService.getPropiedadesPorAgente().subscribe(data => {
-      this.propiedadesPorAgente = data.map((item: any) => ({
-        name: item.agente,
-        value: item.cantidad
+    this.obtenerEstadisticas.execute().subscribe((data: EstadisticaAgente[]) => {
+      this.propiedadesPorAgente = data.map(({ agente, cantidad }) => ({
+        name: agente,
+        value: cantidad
       }));
 
-      this.exportData = this.propiedadesPorAgente.map(p => ({
-        Agente: p.name,
-        Cantidad: p.value
+      this.exportData = data.map(({ agente, cantidad }) => ({
+        Agente: agente,
+        Cantidad: cantidad
       }));
 
       this.isLoading = false;
