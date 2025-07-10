@@ -40,6 +40,7 @@ import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapte
 import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
 import { UsuarioRepository } from '@domain/repositories/usuario.repository';
 import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
+import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -60,6 +61,7 @@ import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
     DashboardTableComponent,
     EstadoPipe,
     PrecioMonedaPipe,
+    FormatearRolesPipe
   ],
   providers: [
     ListarPropiedadesUseCase,
@@ -217,17 +219,6 @@ export class AdminDashboardComponent implements OnInit {
       duration: 3000,
       panelClass: ['snack-success']
     });
-  }
-
-  formatearRoles(roles: any[]): string {
-    if (!Array.isArray(roles)) return '';
-    return roles
-      .map(r => {
-        const valor = typeof r === 'string' ? r : r?.nombre || r?.name;
-        return typeof valor === 'string' ? valor.replace('ROLE_', '') : '';
-      })
-      .filter(r => r)
-      .join(', ');
   }
 
   esCliente(usuario: Usuario): boolean {

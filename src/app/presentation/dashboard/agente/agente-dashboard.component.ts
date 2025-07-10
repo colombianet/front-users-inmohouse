@@ -34,6 +34,7 @@ import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
 import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
 import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
 import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
+import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
 
 @Component({
   selector: 'app-agente-dashboard',
@@ -51,7 +52,8 @@ import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.se
     MatIconModule,
     DashboardTableComponent,
     EstadoPipe,
-    PrecioMonedaPipe
+    PrecioMonedaPipe,
+    FormatearRolesPipe
   ],
   providers: [
     ListarClientesUseCase,
@@ -101,7 +103,6 @@ export class AgenteDashboardComponent implements OnInit {
   refrescarListado(): void {
     this.listarPropiedadesUseCase.execute().subscribe({
       next: (propiedades) => {
-        console.log('->', propiedades)
         this.propiedades = propiedades;
         this.dataSourcePropiedades.data = propiedades;
       },
@@ -168,18 +169,6 @@ export class AgenteDashboardComponent implements OnInit {
         });
       }
     });
-  }
-
-  formatearRoles(roles: any[]): string {
-    if (!Array.isArray(roles)) return '—';
-
-    return roles
-      .map(r => {
-        const valor = typeof r === 'string' ? r : r?.nombre || r?.name;
-        return typeof valor === 'string' ? valor.replace('ROLE_', '') : '';
-      })
-      .filter(r => r)
-      .join(', ');
   }
 
   logout(): void {

@@ -77,7 +77,7 @@
     </div>
 
     <ng-template #rolesTemplate let-row>
-      {{ formatearRoles(row.roles) }}
+      {{ row.roles | formatearRoles }}
     </ng-template>
 
     <app-dashboard-table
