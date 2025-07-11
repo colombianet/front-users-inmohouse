@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { LoginRequest } from '@domain/models/login-request.model';
-import { LoginUserUseCase } from '@application/use-cases/login-user.usecase';
+import { LoginUserUseCase } from '@application/use-cases/handle-sesion/login-user.usecase';
 import { AuthApiAdapter } from '@infrastructure/adapters/auth-api.adapter';
 import { AppTexts } from '@core/constants/app.texts';
 import { Router } from '@angular/router';

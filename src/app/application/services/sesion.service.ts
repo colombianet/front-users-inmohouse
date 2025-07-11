@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LogoutUseCase } from '@application/use-cases/logout.usecase';
+import { LogoutUseCase } from '@application/use-cases/handle-sesion/logout.usecase';
 import { AppTexts } from '@core/constants/app.texts';
 
 @Injectable({ providedIn: 'root' })

@@ -1,14 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { AppTexts } from '@core/constants/app.texts';
 import { Propiedad } from '@domain/models/propiedad.model';
@@ -23,23 +18,14 @@ import { TablaPropiedadesComponent } from '../components/tabla-propiedades/tabla
 import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
 
 import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
-import { CrearPropiedadUseCase } from '@application/use-cases/propiedad/crear-propiedad.usecase';
 import { EliminarPropiedadUseCase } from '@application/use-cases/propiedad/eliminar-propiedad.usecase';
 import { ListarUsuariosUseCase } from '@application/use-cases/usuario/listar-usuarios.usecase';
-import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuario.usecase';
-import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
-import { LogoutUseCase } from '@application/use-cases/logout.usecase';
-
-import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
-import { UsuarioRepository } from '@domain/repositories/usuario.repository';
-import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
-
-import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
-import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.service';
 import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
 
 import { SesionService } from '@application/services/sesion.service';
+import { MaterialModule } from '@shared/material.module';
+import { ADMIN_PROVIDERS } from './admin-dashboard.providers';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -49,32 +35,12 @@ import { SesionService } from '@application/services/sesion.service';
   imports: [
     CommonModule,
     RouterModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatSnackBarModule,
-    MatDialogModule,
-    MatTableModule,
-    MatCardModule,
-    MatPaginatorModule,
+    MaterialModule,
     DashboardTableComponent,
     TablaPropiedadesComponent,
     FormatearRolesPipe
   ],
-  providers: [
-    ListarPropiedadesUseCase,
-    CrearPropiedadUseCase,
-    EliminarPropiedadUseCase,
-    ListarUsuariosUseCase,
-    CrearUsuarioUseCase,
-    EditarUsuarioUseCase,
-    EliminarUsuarioUseCase,
-    LogoutUseCase,
-    SesionService,
-    { provide: PropiedadRepository, useClass: PropiedadHttpService },
-    { provide: UsuarioRepository, useClass: UsuarioHttpService },
-    { provide: AuthSessionGateway, useClass: AuthStorageAdapter }
-  ]
+  providers: ADMIN_PROVIDERS
 })
 export class AdminDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_ADMIN;

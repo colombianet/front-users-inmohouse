@@ -1,12 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { AppTexts } from '@core/constants/app.texts';
 
@@ -15,8 +12,6 @@ import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dia
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
 import { TablaPropiedadesComponent } from '../components/tabla-propiedades/tabla-propiedades.component';
 
-import { EstadoPipe } from '@shared/pipes/estado.pipe';
-import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
 import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
 
 import { Propiedad } from '@domain/models/propiedad.model';
@@ -28,7 +23,7 @@ import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usua
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
 import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
 
-import { LogoutUseCase } from '@application/use-cases/logout.usecase';
+import { LogoutUseCase } from '@application/use-cases/handle-sesion/logout.usecase';
 import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
 import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
 import { UsuarioRepository } from '@domain/repositories/usuario.repository';
@@ -36,6 +31,8 @@ import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.servic
 import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
 import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
 import { SesionService } from '@application/services/sesion.service';
+import { MaterialModule } from '@shared/material.module';
+import { AGENTE_PROVIDERS } from './agente-dashboard.providers';
 
 @Component({
   selector: 'app-agente-dashboard',
@@ -45,30 +42,12 @@ import { SesionService } from '@application/services/sesion.service';
   imports: [
     CommonModule,
     RouterModule,
-    MatButtonModule,
-    MatSnackBarModule,
-    MatDialogModule,
-    MatCardModule,
-    MatIconModule,
-    MatTableModule,
-    EstadoPipe,
-    PrecioMonedaPipe,
+    MaterialModule,
     FormatearRolesPipe,
     TablaPropiedadesComponent,
     DashboardTableComponent
   ],
-  providers: [
-    ListarClientesUseCase,
-    CrearUsuarioUseCase,
-    EditarUsuarioUseCase,
-    EliminarUsuarioUseCase,
-    ListarPropiedadesUseCase,
-    LogoutUseCase,
-    SesionService,
-    { provide: PropiedadRepository, useClass: PropiedadHttpService },
-    { provide: UsuarioRepository, useClass: UsuarioHttpService },
-    { provide: AuthSessionGateway, useClass: AuthStorageAdapter }
-  ]
+  providers: [ AGENTE_PROVIDERS ]
 })
 export class AgenteDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_AGENTE;

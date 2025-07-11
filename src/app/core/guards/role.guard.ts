@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AppRoutes } from '@core/constants/app.routes';
 import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
-import { ValidarSesionUseCase } from '@application/use-cases/validar-sesion.usecase';
+import { ValidarSesionUseCase } from '@application/use-cases/handle-sesion/validar-sesion.usecase';
 
 export const RoleGuard = (requiredRole: string): CanActivateFn => {
   return () => {
