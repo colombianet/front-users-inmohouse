@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -51,14 +51,18 @@ export class AdminDashboardComponent implements OnInit {
   displayedUserColumns: string[] = ['nombre', 'email', 'roles'];
   dataSourceUsuarios = new MatTableDataSource<Usuario>();
 
+  isCargandoPropiedades = true;
+  isCargandoUsuarios = true;
+  isGlobalLoading = false;
+
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
   private readonly authSession = inject(AuthStorageAdapter);
+  private readonly router = inject(Router);
   public readonly sesionService = inject(SesionService);
 
   private readonly listarPropiedades = inject(ListarPropiedadesUseCase);
   private readonly eliminarPropiedad = inject(EliminarPropiedadUseCase);
-
   private readonly listarUsuarios = inject(ListarUsuariosUseCase);
   private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
 
@@ -66,6 +70,11 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor() {
     this.nombre = this.authSession.getNombre();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) this.isGlobalLoading = true;
+      if (event instanceof NavigationEnd) this.isGlobalLoading = false;
+    });
   }
 
   ngOnInit(): void {
@@ -74,17 +83,23 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   refrescarListado(): void {
+    this.isCargandoPropiedades = true;
+
     this.listarPropiedades.execute().subscribe(propiedades => {
       this.propiedades = propiedades;
+      this.isCargandoPropiedades = false;
     });
   }
 
   refrescarUsuarios(): void {
+    this.isCargandoUsuarios = true;
+
     this.listarUsuarios.execute().subscribe(usuarios => {
       this.usuarios = this.esAgente
         ? usuarios.filter(u => this.esCliente(u))
         : usuarios;
       this.dataSourceUsuarios.data = this.usuarios;
+      this.isCargandoUsuarios = false;
     });
   }
 

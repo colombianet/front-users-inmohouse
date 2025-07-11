@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -18,18 +18,10 @@ import { Propiedad } from '@domain/models/propiedad.model';
 import { Usuario } from '@domain/models/user.model';
 
 import { ListarClientesUseCase } from '@application/use-cases/usuario/listar-clientes.usecase';
-import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuario.usecase';
-import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
 import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
 
-import { LogoutUseCase } from '@application/use-cases/handle-sesion/logout.usecase';
-import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
 import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
-import { UsuarioRepository } from '@domain/repositories/usuario.repository';
-import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.service';
-import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
-import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
 import { SesionService } from '@application/services/sesion.service';
 import { MaterialModule } from '@shared/material.module';
 import { AGENTE_PROVIDERS } from './agente-dashboard.providers';
@@ -55,9 +47,14 @@ export class AgenteDashboardComponent implements OnInit {
   propiedades: Propiedad[] = [];
   dataSourceClientes = new MatTableDataSource<Usuario>();
 
+  isCargandoPropiedades = true;
+  isCargandoClientes = true;
+  isGlobalLoading = false;
+
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
   private readonly authSession = inject(AuthStorageAdapter);
+  private readonly router = inject(Router);
   private readonly listarClientes = inject(ListarClientesUseCase);
   private readonly listarPropiedadesUseCase = inject(ListarPropiedadesUseCase);
   private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
@@ -65,6 +62,11 @@ export class AgenteDashboardComponent implements OnInit {
 
   constructor() {
     this.nombre = this.authSession.getNombre();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) this.isGlobalLoading = true;
+      if (event instanceof NavigationEnd) this.isGlobalLoading = false;
+    });
   }
 
   ngOnInit(): void {
@@ -73,22 +75,38 @@ export class AgenteDashboardComponent implements OnInit {
   }
 
   refrescarListado(): void {
+    this.isCargandoPropiedades = true;
+
     this.listarPropiedadesUseCase.execute().subscribe({
-      next: propiedades => this.propiedades = propiedades,
-      error: () => this.snackBar.open(AppTexts.ERROR_CHARGE_PROPERTYS, 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snack-error']
-      })
+      next: propiedades => {
+        this.propiedades = propiedades;
+        this.isCargandoPropiedades = false;
+      },
+      error: () => {
+        this.snackBar.open(AppTexts.ERROR_CHARGE_PROPERTYS, 'Cerrar', {
+          duration: 3000,
+          panelClass: ['snack-error']
+        });
+        this.isCargandoPropiedades = false;
+      }
     });
   }
 
   refrescarClientes(): void {
+    this.isCargandoClientes = true;
+
     this.listarClientes.execute().subscribe({
-      next: clientes => this.dataSourceClientes.data = clientes,
-      error: () => this.snackBar.open('Error al cargar clientes', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snack-error']
-      })
+      next: clientes => {
+        this.dataSourceClientes.data = clientes;
+        this.isCargandoClientes = false;
+      },
+      error: () => {
+        this.snackBar.open('Error al cargar clientes', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['snack-error']
+        });
+        this.isCargandoClientes = false;
+      }
     });
   }
 

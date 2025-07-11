@@ -1,7 +1,9 @@
 <section class="dashboard dashboard--admin">
+  <!-- Loading global al navegar -->
+  <mat-progress-bar *ngIf="isGlobalLoading" mode="indeterminate" color="accent"></mat-progress-bar>
+
   <h1 class="dashboard__title">{{ title }}</h1>
 
-  <!-- 👋 Bienvenida con logout en la cabecera -->
   <div class="dashboard__section dashboard__section--panel dashboard__section--welcome">
     <div class="dashboard__header">
       <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
@@ -15,11 +17,9 @@
     </div>
   </div>
 
-  <!-- 📋 Propiedades registradas -->
+  <!-- 📋 Propiedades -->
   <div class="dashboard__section dashboard__section--panel">
-    <div class="dashboard__section-title">
-      📋 <span>Propiedades registradas</span>
-    </div>
+    <div class="dashboard__section-title">📋 <span>Propiedades registradas</span></div>
 
     <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
@@ -28,22 +28,27 @@
       </button>
     </div>
 
+    <mat-spinner *ngIf="isCargandoPropiedades"></mat-spinner>
+
     <app-tabla-propiedades
+      *ngIf="!isCargandoPropiedades && propiedades.length > 0"
       [propiedades]="propiedades"
       [mostrarAcciones]="true"
       [pageSize]="5"
-      [pageSizeOptions]="[5,10,20]"
+      [pageSizeOptions]="[5, 10, 20]"
       [emptyMessage]="'No hay propiedades registradas aún.'"
       (editar)="editarPropiedad($event)"
       (eliminar)="eliminarPropiedadDesdeTabla($event.id!)">
     </app-tabla-propiedades>
+
+    <div class="mensaje-vacio" *ngIf="!isCargandoPropiedades && propiedades.length === 0">
+      No hay propiedades registradas aún.
+    </div>
   </div>
 
-  <!-- 👥 Usuarios registrados -->
+  <!-- 👥 Usuarios -->
   <div class="dashboard__section dashboard__section--panel">
-    <div class="dashboard__section-title">
-      👥 <span>Usuarios registrados</span>
-    </div>
+    <div class="dashboard__section-title">👥 <span>Usuarios registrados</span></div>
 
     <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormularioUsuario()">
@@ -56,7 +61,10 @@
       {{ row.roles | formatearRoles }}
     </ng-template>
 
+    <mat-spinner *ngIf="isCargandoUsuarios"></mat-spinner>
+
     <app-dashboard-table
+      *ngIf="!isCargandoUsuarios && usuarios.length > 0"
       [dataSource]="dataSourceUsuarios"
       [displayedColumns]="displayedUserColumns"
       [columnDefs]="[
@@ -71,13 +79,15 @@
       (editar)="editarUsuario($event)"
       (eliminar)="eliminarUsuario($event.id!)">
     </app-dashboard-table>
+
+    <div class="mensaje-vacio" *ngIf="!isCargandoUsuarios && usuarios.length === 0">
+      No hay usuarios registrados aún.
+    </div>
   </div>
 
   <!-- 📊 Estadísticas -->
   <div class="dashboard__section dashboard__section--panel">
-    <div class="dashboard__section-title">
-      📊 <span>Estadísticas</span>
-    </div>
+    <div class="dashboard__section-title">📊 <span>Estadísticas</span></div>
 
     <button mat-stroked-button routerLink="/dashboard/admin/estadisticas" class="btn btn--outline">
       <mat-icon>bar_chart</mat-icon>

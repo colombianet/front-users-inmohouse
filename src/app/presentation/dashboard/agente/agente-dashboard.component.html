@@ -1,7 +1,8 @@
 <section class="dashboard dashboard--agente">
+  <mat-progress-bar *ngIf="isGlobalLoading" mode="indeterminate" color="accent"></mat-progress-bar>
+
   <h1 class="dashboard__title">{{ title }}</h1>
 
-  <!-- 👋 Bienvenida con logout en la cabecera -->
   <div class="dashboard__section dashboard__section--panel dashboard__section--welcome">
     <div class="dashboard__header">
       <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
@@ -17,20 +18,27 @@
 
   <!-- 📋 Propiedades del agente -->
   <div class="dashboard__section dashboard__section--panel">
-    <div class="dashboard__section-title">
-      📋 <span>Mis propiedades</span>
-    </div>
+    <div class="dashboard__section-title">📋 <span>Mis propiedades</span></div>
 
-    <app-tabla-propiedades [propiedades]="propiedades" [mostrarAcciones]="false" [pageSize]="5"
-      [pageSizeOptions]="[5, 10, 20]" [emptyMessage]="'No has creado propiedades aún.'">
+    <mat-spinner *ngIf="isCargandoPropiedades"></mat-spinner>
+
+    <app-tabla-propiedades
+      *ngIf="!isCargandoPropiedades && propiedades.length > 0"
+      [propiedades]="propiedades"
+      [mostrarAcciones]="false"
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 20]"
+      [emptyMessage]="'No has creado propiedades aún.'">
     </app-tabla-propiedades>
+
+    <div class="mensaje-vacio" *ngIf="!isCargandoPropiedades && propiedades.length === 0">
+      No has creado propiedades aún.
+    </div>
   </div>
 
   <!-- 👥 Clientes -->
   <div class="dashboard__section dashboard__section--panel">
-    <div class="dashboard__section-title">
-      👥 <span>Mis clientes</span>
-    </div>
+    <div class="dashboard__section-title">👥 <span>Mis clientes</span></div>
 
     <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormularioCliente()">
@@ -43,13 +51,27 @@
       {{ row.roles | formatearRoles }}
     </ng-template>
 
-    <app-dashboard-table [dataSource]="dataSourceClientes" [displayedColumns]="['nombre','email','roles']" [columnDefs]="[
+    <mat-spinner *ngIf="isCargandoClientes"></mat-spinner>
+
+    <app-dashboard-table
+      *ngIf="!isCargandoClientes && dataSourceClientes.data.length > 0"
+      [dataSource]="dataSourceClientes"
+      [displayedColumns]="['nombre','email','roles']"
+      [columnDefs]="[
         { key: 'nombre', label: 'Nombre' },
         { key: 'email', label: 'Email' },
         { key: 'roles', label: 'Roles' }
-      ]" [customTemplates]="{ roles: rolesTemplate }" [emptyMessage]="'No tienes clientes registrados aún.'"
-      [showActions]="true" [showDelete]="true" (editar)="editarCliente($event)"
+      ]"
+      [customTemplates]="{ roles: rolesTemplate }"
+      [emptyMessage]="'No tienes clientes registrados aún.'"
+      [showActions]="true"
+      [showDelete]="true"
+      (editar)="editarCliente($event)"
       (eliminar)="eliminarCliente($event.id!)">
     </app-dashboard-table>
+
+    <div class="mensaje-vacio" *ngIf="!isCargandoClientes && dataSourceClientes.data.length === 0">
+      No tienes clientes registrados aún.
+    </div>
   </div>
 </section>
