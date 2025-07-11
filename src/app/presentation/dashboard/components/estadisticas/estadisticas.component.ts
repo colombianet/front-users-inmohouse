@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { MatCardModule } from '@angular/material/card';
@@ -8,10 +8,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ExportButtonComponent } from '@shared/export-button/export-button.component';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
+
 import { EstadisticaAgente } from '@domain/models/estadistica.model';
 import { EstadisticaPorTipo } from '@domain/models/estadistica-por-tipo.model';
 import { ObtenerEstadisticasAgenteUseCase } from '@application/use-cases/estadisticas/obtener-estadisticas-agente.usecase copy';
 import { ObtenerEstadisticasPorTipoUseCase } from '@application/use-cases/estadisticas/obtener-estadisticas-por-tipo.usecase';
+
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-estadisticas',
@@ -36,7 +40,7 @@ import { ObtenerEstadisticasPorTipoUseCase } from '@application/use-cases/estadi
     ])
   ]
 })
-export class EstadisticasComponent {
+export class EstadisticasComponent implements OnDestroy {
   propiedadesPorAgente: { name: string; value: number }[] = [];
   propiedadesPorTipo: { name: string; value: number }[] = [];
   exportData: { Categoria: string; Cantidad: number }[] = [];
@@ -44,6 +48,8 @@ export class EstadisticasComponent {
   colorScheme = 'vivid';
   mostrarInactivos = false;
   vista: 'agente' | 'tipo' = 'agente';
+
+  private destroy$ = new Subject<void>();
 
   colorPorTipo: { [tipo: string]: string } = {
     CASA: '#4CAF50',
@@ -57,7 +63,8 @@ export class EstadisticasComponent {
   constructor(
     private obtenerEstadisticasAgente: ObtenerEstadisticasAgenteUseCase,
     private obtenerEstadisticasTipo: ObtenerEstadisticasPorTipoUseCase,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.cargarEstadisticas();
   }
@@ -66,35 +73,51 @@ export class EstadisticasComponent {
     this.isLoading = true;
 
     if (this.vista === 'agente') {
-      this.obtenerEstadisticasAgente.execute({ incluirInactivos: this.mostrarInactivos }).subscribe((data: EstadisticaAgente[]) => {
-        this.propiedadesPorAgente = data.map(({ agente, cantidad }) => ({
-          name: cantidad === 0 ? `${agente} ⚠` : agente,
-          value: cantidad
-        }));
+      this.obtenerEstadisticasAgente.execute({ incluirInactivos: this.mostrarInactivos })
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((data: EstadisticaAgente[]) => {
+          this.propiedadesPorAgente = data.map(({ agente, cantidad }) => ({
+            name: cantidad === 0 ? `${agente} ⚠` : agente,
+            value: cantidad
+          }));
 
-        this.exportData = data.map(({ agente, cantidad }) => ({
-          Categoria: agente,
-          Cantidad: cantidad
-        }));
+          this.exportData = data.map(({ agente, cantidad }) => ({
+            Categoria: agente,
+            Cantidad: cantidad
+          }));
 
-        this.isLoading = false;
-      });
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        });
     } else {
-      this.obtenerEstadisticasTipo.execute().subscribe((data: EstadisticaPorTipo[]) => {
-        this.propiedadesPorTipo = data.map(({ tipo, cantidad }) => ({
-          name: tipo?.toUpperCase() || 'DESCONOCIDO',
-          value: cantidad
-        }));
+      this.obtenerEstadisticasTipo.execute()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((data: EstadisticaPorTipo[]) => {
+          this.propiedadesPorTipo = data.map(({ tipo, cantidad }) => ({
+            name: tipo?.toUpperCase() || 'DESCONOCIDO',
+            value: cantidad
+          }));
 
-        this.exportData = data.map(({ tipo, cantidad }) => ({
-          Categoria: tipo || 'Desconocido',
-          Cantidad: cantidad
-        }));
+          this.exportData = data.map(({ tipo, cantidad }) => ({
+            Categoria: tipo || 'Desconocido',
+            Cantidad: cantidad
+          }));
 
-        this.isLoading = false;
-      });
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        });
     }
   }
+
+  calcularTotal(): number {
+    return this.exportData.reduce((acc, item) => acc + item.Cantidad, 0);
+  }
+
+  formatearPorcentaje = (value: number): string => {
+    const total = this.calcularTotal();
+    const porcentaje = total > 0 ? (value / total * 100).toFixed(1) : '0';
+    return `${value} • ${porcentaje}%`;
+  };
 
   cambiarVista(nueva: 'agente' | 'tipo'): void {
     if (this.vista !== nueva) {
@@ -108,18 +131,14 @@ export class EstadisticasComponent {
     if (this.vista === 'agente') this.cargarEstadisticas();
   }
 
-  calcularTotal(): number {
-    return this.exportData.reduce((acc, item) => acc + item.Cantidad, 0);
-  }
-
   get chartHeight(): number {
     const base = 60;
     const padding = 100;
     const total = this.vista === 'agente'
-      ? this.propiedadesPorAgente.length
-      : this.propiedadesPorTipo.length;
+      ? this.propiedadesPorAgente?.length || 0
+      : this.propiedadesPorTipo?.length || 0;
 
-    return Math.min(total * base + padding, 1000); // Limita a máximo 1000px
+    return Math.min(total * base + padding, 1000);
   }
 
   get coloresTipo(): { name: string; value: string }[] {
@@ -131,5 +150,10 @@ export class EstadisticasComponent {
 
   volver(): void {
     this.router.navigate(['/dashboard/admin']);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

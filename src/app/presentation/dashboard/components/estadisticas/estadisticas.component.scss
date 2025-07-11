@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 .estadisticas {
   padding: 2rem;
   max-width: 900px;
@@ -71,6 +73,10 @@
       mat-icon {
         color: #1976d2;
       }
+
+      p {
+        margin: 0;
+      }
     }
   }
 
@@ -95,13 +101,13 @@
 
   .estadisticas__grafica {
     width: 100%;
-    overflow-x: auto; // ✅ Scroll horizontal
+    overflow-x: auto;
     margin-bottom: 2rem;
 
     ngx-charts-bar-horizontal,
     ngx-charts-bar-vertical {
       width: 100%;
-      min-width: 600px; // ✅ Fuerza scroll si es menor a este ancho
+      min-width: 600px;
     }
   }
 
@@ -144,4 +150,10 @@
       }
     }
   }
+}
+
+::ng-deep .ngx-charts .data-label text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  fill: #444;
 }

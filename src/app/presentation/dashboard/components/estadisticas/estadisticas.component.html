@@ -15,10 +15,8 @@
       </button>
     </ng-container>
 
-    <app-export-button
-      [data]="exportData"
-      [fileName]="vista === 'agente' ? 'propiedades_por_agente' : 'propiedades_por_tipo'"
-      [showExcel]="true"
+    <app-export-button [data]="exportData"
+      [fileName]="vista === 'agente' ? 'propiedades_por_agente' : 'propiedades_por_tipo'" [showExcel]="true"
       [showPdf]="true">
     </app-export-button>
   </div>
@@ -44,34 +42,16 @@
     <mat-spinner diameter="40" color="primary"></mat-spinner>
   </div>
 
-  <div class="estadisticas__grafica" *ngIf="!isLoading" @fadeIn>
-    <ngx-charts-bar-horizontal
-      *ngIf="vista === 'agente'"
-      [results]="propiedadesPorAgente"
-      [scheme]="colorScheme"
-      [xAxis]="true"
-      [yAxis]="true"
-      [legend]="false"
-      [showXAxisLabel]="true"
-      [showYAxisLabel]="true"
-      [view]="[800, chartHeight]"
-      xAxisLabel="Cantidad"
-      yAxisLabel="Agente">
+  <div class="estadisticas__grafica" *ngIf="!isLoading">
+    <ngx-charts-bar-horizontal *ngIf="vista === 'agente'" [results]="propiedadesPorAgente" [scheme]="colorScheme"
+      [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true"
+      [view]="[800, chartHeight]" xAxisLabel="Cantidad" yAxisLabel="Agente" [animations]="false">
     </ngx-charts-bar-horizontal>
 
-    <ngx-charts-bar-vertical
-      *ngIf="vista === 'tipo'"
-      [results]="propiedadesPorTipo"
-      [scheme]="colorScheme"
-      [customColors]="coloresTipo"
-      [xAxis]="true"
-      [yAxis]="true"
-      [legend]="false"
-      [showXAxisLabel]="true"
-      [showYAxisLabel]="true"
-      [view]="[800, chartHeight]"
-      xAxisLabel="Cantidad"
-      yAxisLabel="Tipo">
+    <ngx-charts-bar-vertical *ngIf="vista === 'tipo'" [results]="propiedadesPorTipo" [scheme]="colorScheme"
+      [customColors]="coloresTipo" [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true"
+      [showYAxisLabel]="true" [view]="[800, chartHeight]" xAxisLabel="Cantidad" yAxisLabel="Tipo" [animations]="false"
+      [barPadding]="8" [showDataLabel]="true" [dataLabelFormatting]="formatearPorcentaje">
     </ngx-charts-bar-vertical>
   </div>
 </section>
