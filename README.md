@@ -2,6 +2,8 @@
 
 **InmoHouse** es una aplicación web moderna que digitaliza la gestión de propiedades, agentes y clientes para una empresa inmobiliaria. Desarrollada con una arquitectura limpia y escalable, ofrece seguridad, control por roles y una experiencia de usuario optimizada.
 
+---
+
 ## 🚀 Tecnologías Utilizadas
 
 - Angular 17.3.0 (Standalone Components + Angular Material)
@@ -13,29 +15,49 @@
 - ngx-charts para gráficas dinámicas
 - Exportación de datos a Excel y PDF
 
+---
+
 ## 📦 Arquitectura del Proyecto
 
 La estructura sigue los principios de Clean Architecture adaptados, basada en capas desacopladas:
 
+- `@domain`: define modelos, interfaces, contratos y gateways.
+- `@application`: gestiona los casos de uso (`listar-clientes.usecase.ts`, `crear-propiedad.usecase.ts`, etc.).
+- `@infrastructure`: implementa adaptadores HTTP y almacenamiento (`AuthStorageAdapter`, `UsuarioHttpService`, etc.).
+- `@components`: contiene componentes standalone divididos por roles (admin, agente, cliente).
+
+---
 
 ## 🔐 Seguridad y Roles
 
-- Redirección automática post-login según rol
-- `RoleGuard` protege rutas privadas
-- Token JWT decodificado localmente
-- Acciones como editar/eliminar condicionadas al rol
-- Pantallas de error 403 y 404 personalizadas
+- Redirección automática post-login según el rol
+- `RoleGuard` protege rutas específicas
+- Token JWT decodificado localmente para control de acceso
+- Edición/eliminación de recursos condicionada por permisos
+- Pantallas personalizadas para errores 403 y 404
+
+---
 
 ## 📊 Funcionalidades Destacadas
 
-- Dashboards únicos para admin, agente y cliente
-- CRUD completo para propiedades (admin)
-- CRUD completo para usuarios (admin)
-- CRUD de clientes por agentes
-- Lectura de propiedades para clientes
-- Estadísticas: propiedades por agente
-- Exportaciones: Excel y PDF
-- Diseño responsivo optimizado para desktop y móvil
+- Dashboards separados para administrador, agente y cliente
+- CRUD completo de propiedades y usuarios
+- Gestión de clientes por parte de agentes
+- Vista de propiedades para clientes sin edición
+- Estadísticas de propiedades por agente y tipo
+- Exportación de datos (Excel, PDF)
+- Diseño responsive para desktop, tablet y móvil
+
+---
+
+## 📈 Estadísticas Inteligentes
+
+- Visualización con `ngx-charts`
+- Cálculo de porcentajes por tipo y agente
+- Etiquetas dinámicas como: `12 • 23.1%`
+- Información resumen: tipo con mayor participación, total global
+
+---
 
 ## 🧪 Credenciales de Prueba
 
@@ -43,86 +65,78 @@ La estructura sigue los principios de Clean Architecture adaptados, basada en ca
 - **Agente:** agente@mail.com / 12345  
 - **Cliente:** cliente@mail.com / 12345  
 
-## ⚙️ Instalación y Ejecución
+---
 
-### Backend (Spring Boot - Railway)
+### 🔧 Backend (Spring Boot + Railway)
 
 ```bash
-git clone https://github.com/colombianet/back-users
-cd back-users
-# Configurar variables en application.properties
-./mvnw spring-boot:run
 
 ### 🖥️ Frontend (Angular - Vercel)
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/colombianet/front-users-inmohouse
-cd front-users-inmohouse
-
-# Instalar dependencias
-npm install
-
-# Iniciar servidor de desarrollo
-npm start  # alias para ng serve
-
-📦 Versión de Angular utilizada: **17.3.0**
-
-🔒 Autenticación: **JWT gestionado a través de AuthService**  
-Se valida el token y se decodifica localmente para controlar acceso según el rol.
-
-🚧 Rutas protegidas: **RoleGuard implementado**  
-Protege rutas específicas del dashboard basándose en el rol extraído del token JWT.
-
-🎨 Interfaz de usuario: **Angular Material + SCSS con metodología BEM**  
-Diseño consistente, reutilizable y visualmente limpio, siguiendo buenas prácticas de CSS estructurado.
-
-📱 Diseño responsivo: **media queries + Flexbox**  
-La experiencia se adapta fluidamente a desktop, tablet y móvil.
-
-🔗 Aplicación en producción:  
-[Vercel - Frontend](https://front-users-inmohouse.vercel.app/)
+git clone https://github.com/colombianet/back-users
+cd back-users
+# Configura tus variables en application.properties
+./mvnw spring-boot:run
 
 ## 📄 Documentación Técnica
 
-- ✅ **Arquitectura basada en Clean Architecture**, separada en capas:
-  - `@domain`: modelos, interfaces, contratos y gateways.
-  - `@application`: casos de uso desacoplados por responsabilidad (`listar-clientes.usecase.ts`, `crear-propiedad.usecase.ts`, etc.).
-  - `@infrastructure`: adaptadores HTTP para backend y almacenamiento local (`AuthStorageAdapter`, `UsuarioHttpService`, etc.).
-  - `@components`: componentes standalone organizados por rol (admin, agente, cliente).
+---
 
-- 🧱 **Diseño modular con Angular Standalone Components**:
-  - Cada dashboard está encapsulado: `AdminDashboardComponent`, `AgenteDashboardComponent`, `ClienteDashboardComponent`.
-  - Servicios y casos de uso se inyectan como providers locales para mantener desacoplamiento.
+### 🧱 Arquitectura basada en Clean Architecture
 
-- 🎨 **Estilos SCSS con metodología BEM**:
-  - Archivos segmentados (`_dashboard.scss`, `_buttons.scss`, `_dashboard-table.scss`).
-  - Personalización visual por tipo de usuario: `.dashboard--admin`, `.dashboard--agente`, `.dashboard--cliente`.
+El proyecto sigue un enfoque desacoplado y modular, dividido en capas:
 
-- 📊 **Pipes personalizados para visualización de datos**:
-  - `precioMoneda`: convierte valores numéricos en moneda formateada.
-  - `estado`: traduce y estiliza el estado de una propiedad (`DISPONIBLE`, `VENDIDA`, etc.).
+- `@domain`: Modelos, interfaces, gateways y contratos.
+- `@application`: Casos de uso divididos por contexto (`crear-propiedad.usecase.ts`, `listar-usuarios.usecase.ts`, etc.).
+- `@infrastructure`: Adapta servicios HTTP y almacenamiento local (`AuthStorageAdapter`, `UsuarioHttpService`, etc.).
+- `@presentation/components`: Componentes standalone organizados por rol (admin, agente, cliente).
 
-- 🔐 **Sistema de autenticación y autorización con JWT**:
-  - Token gestionado mediante `AuthService`.
-  - Decodificación local del token para determinar rol.
-  - `RoleGuard` protege rutas específicas por rol (`admin`, `agente`, `cliente`).
+---
 
-- 📦 **Exportaciones**:
-  - Datos exportables a Excel y PDF desde los dashboards.
-  - Integración con FileSaver.js y formatos dinámicos.
+### 🧩 Componentes standalone
 
-- 📈 **Visualización de estadísticas**:
-  - Uso de `ngx-charts` para representar propiedades por agente, tipo o estado.
-  - Navegación directa desde el dashboard de administrador hacia módulo de estadísticas.
+Cada dashboard está encapsulado y contiene sus propios módulos:
 
-- ⚙️ **Interacción de formularios**:
-  - Formularios reactivos con validación en `UserFormComponent` y `PropertyFormComponent`.
-  - Modales reutilizables (`MatDialog`) para editar, crear y eliminar.
+- `AdminDashboardComponent`
+- `AgenteDashboardComponent`
+- `ClienteDashboardComponent`
 
-- 🧪 **Control de errores y usabilidad**:
-  - Snackbars informativos (`MatSnackBar`) para todas las acciones.
-  - Plantillas condicionales con `ng-template` para mostrar estados personalizados.
-  - Paginación, botones de acción y manejo de vacíos en `DashboardTableComponent`.
+Todos utilizan `inject()` para acceder a dependencias, eliminando constructores largos y facilitando testeo.
 
+---
+
+### 📂 Modularización de Angular Material
+
+Los módulos de Angular Material se agrupan en `MaterialModule`:
+
+```ts
+import { MaterialModule } from '@shared/material.module';
+Esto reduce decenas de líneas de importación por componente. Exporta:
+
+- `MatButtonModule`
+- `MatCardModule`
+- `MatDialogModule`
+- `MatIconModule`
+- `MatInputModule`
+- `MatPaginatorModule`
+- `MatProgressSpinnerModule`
+- `MatSelectModule`
+- `MatSnackBarModule`
+- `MatTableModule`
+- `MatTabsModule`
+- `MatTooltipModule`
+- `MatFormFieldModule`
+- `MatMenuModule`
+- `MatCheckboxModule`
+- `MatRadioModule`
+- `MatSlideToggleModule`
+- `MatDatepickerModule`
+- `MatNativeDateModule`
+- `MatExpansionModule`
+
+---
+
+### 💉 Inyección simplificada con `inject()` + `providers`
+
+Para reducir aún más líneas, se centralizan los providers en un archivo externo:
 
