@@ -1,40 +1,41 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import { AppTexts } from '@core/constants/app.texts';
 
 import { UserFormComponent } from '../components/user-form/user-form.component';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
+import { TablaPropiedadesComponent } from '../components/tabla-propiedades/tabla-propiedades.component';
 
 import { EstadoPipe } from '@shared/pipes/estado.pipe';
 import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
+import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
 
 import { Propiedad } from '@domain/models/propiedad.model';
 import { Usuario } from '@domain/models/user.model';
-
-import { PropertyService } from '@infrastructure/services/property.service';
-import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.service';
-import { UsuarioRepository } from '@domain/repositories/usuario.repository';
 
 import { ListarClientesUseCase } from '@application/use-cases/usuario/listar-clientes.usecase';
 import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuario.usecase';
 import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
-import { LogoutUseCase } from '@application/use-cases/logout.usecase';
-import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
-import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
 import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
+
+import { LogoutUseCase } from '@application/use-cases/logout.usecase';
+import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
+import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
+import { UsuarioRepository } from '@domain/repositories/usuario.repository';
+import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.service';
 import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
 import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
-import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
+import { SesionService } from '@application/services/sesion.service';
 
 @Component({
   selector: 'app-agente-dashboard',
@@ -47,13 +48,14 @@ import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
     MatButtonModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatTableModule,
     MatCardModule,
     MatIconModule,
-    DashboardTableComponent,
+    MatTableModule,
     EstadoPipe,
     PrecioMonedaPipe,
-    FormatearRolesPipe
+    FormatearRolesPipe,
+    TablaPropiedadesComponent,
+    DashboardTableComponent
   ],
   providers: [
     ListarClientesUseCase,
@@ -62,6 +64,7 @@ import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
     EliminarUsuarioUseCase,
     ListarPropiedadesUseCase,
     LogoutUseCase,
+    SesionService,
     { provide: PropiedadRepository, useClass: PropiedadHttpService },
     { provide: UsuarioRepository, useClass: UsuarioHttpService },
     { provide: AuthSessionGateway, useClass: AuthStorageAdapter }
@@ -71,25 +74,15 @@ export class AgenteDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_AGENTE;
   nombre: string | null;
   propiedades: Propiedad[] = [];
-  clientes: Usuario[] = [];
-
-  displayedColumns: string[] = ['titulo', 'tipo', 'estado', 'ubicacion', 'precio'];
-  displayedClientColumns: string[] = ['nombre', 'email', 'roles'];
-
-  dataSourcePropiedades = new MatTableDataSource<Propiedad>();
   dataSourceClientes = new MatTableDataSource<Usuario>();
 
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
-  private readonly propertyService = inject(PropertyService);
-  private readonly logoutUseCase = inject(LogoutUseCase);
   private readonly authSession = inject(AuthStorageAdapter);
-
   private readonly listarClientes = inject(ListarClientesUseCase);
-  private readonly crearUsuarioUseCase = inject(CrearUsuarioUseCase);
-  private readonly editarUsuarioUseCase = inject(EditarUsuarioUseCase);
-  private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
   private readonly listarPropiedadesUseCase = inject(ListarPropiedadesUseCase);
+  private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
+  public readonly sesionService = inject(SesionService);
 
   constructor() {
     this.nombre = this.authSession.getNombre();
@@ -102,31 +95,21 @@ export class AgenteDashboardComponent implements OnInit {
 
   refrescarListado(): void {
     this.listarPropiedadesUseCase.execute().subscribe({
-      next: (propiedades) => {
-        this.propiedades = propiedades;
-        this.dataSourcePropiedades.data = propiedades;
-      },
-      error: () => {
-        this.snackBar.open(AppTexts.ERROR_CHARGE_PROPERTYS, 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snack-error']
-        });
-      }
+      next: propiedades => this.propiedades = propiedades,
+      error: () => this.snackBar.open(AppTexts.ERROR_CHARGE_PROPERTYS, 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snack-error']
+      })
     });
   }
 
   refrescarClientes(): void {
     this.listarClientes.execute().subscribe({
-      next: (clientes) => {
-        this.clientes = clientes;
-        this.dataSourceClientes.data = clientes;
-      },
-      error: () => {
-        this.snackBar.open('Error al cargar clientes', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snack-error']
-        });
-      }
+      next: clientes => this.dataSourceClientes.data = clientes,
+      error: () => this.snackBar.open('Error al cargar clientes', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snack-error']
+      })
     });
   }
 
@@ -168,14 +151,6 @@ export class AgenteDashboardComponent implements OnInit {
           });
         });
       }
-    });
-  }
-
-  logout(): void {
-    this.logoutUseCase.execute();
-    this.snackBar.open(AppTexts.LOGOUT, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['snack-success']
     });
   }
 }

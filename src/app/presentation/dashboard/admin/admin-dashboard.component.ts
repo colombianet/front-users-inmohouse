@@ -1,46 +1,45 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { AppTexts } from '@core/constants/app.texts';
+import { Propiedad } from '@domain/models/propiedad.model';
+import { Usuario } from '@domain/models/user.model';
 
 import { PropertyFormComponent } from '../components/property-form/property-form.component';
 import { UserFormComponent } from '../components/user-form/user-form.component';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
-
-import { Propiedad } from '@domain/models/propiedad.model';
-import { Usuario } from '@domain/models/user.model';
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
-import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
-import { EstadoPipe } from '@shared/pipes/estado.pipe';
+import { TablaPropiedadesComponent } from '../components/tabla-propiedades/tabla-propiedades.component';
+
+import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
 
 import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
 import { CrearPropiedadUseCase } from '@application/use-cases/propiedad/crear-propiedad.usecase';
 import { EliminarPropiedadUseCase } from '@application/use-cases/propiedad/eliminar-propiedad.usecase';
-
 import { ListarUsuariosUseCase } from '@application/use-cases/usuario/listar-usuarios.usecase';
 import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuario.usecase';
 import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
-
 import { LogoutUseCase } from '@application/use-cases/logout.usecase';
+
+import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
+import { UsuarioRepository } from '@domain/repositories/usuario.repository';
+import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
 
 import { PropiedadHttpService } from '@infrastructure/adapters/propiedad-http.service';
 import { UsuarioHttpService } from '@infrastructure/adapters/usuario-http.service';
 import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
 
-import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
-import { UsuarioRepository } from '@domain/repositories/usuario.repository';
-import { AuthSessionGateway } from '@domain/gateways/auth-session.gateway';
-import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
+import { SesionService } from '@application/services/sesion.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -59,8 +58,7 @@ import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
     MatCardModule,
     MatPaginatorModule,
     DashboardTableComponent,
-    EstadoPipe,
-    PrecioMonedaPipe,
+    TablaPropiedadesComponent,
     FormatearRolesPipe
   ],
   providers: [
@@ -72,25 +70,25 @@ import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
     EditarUsuarioUseCase,
     EliminarUsuarioUseCase,
     LogoutUseCase,
+    SesionService,
     { provide: PropiedadRepository, useClass: PropiedadHttpService },
     { provide: UsuarioRepository, useClass: UsuarioHttpService },
     { provide: AuthSessionGateway, useClass: AuthStorageAdapter }
-  ],
+  ]
 })
 export class AdminDashboardComponent implements OnInit {
   title = AppTexts.WELCOME_ADMIN;
   nombre: string | null;
   propiedades: Propiedad[] = [];
   usuarios: Usuario[] = [];
-  displayedColumns: string[] = ['titulo', 'tipo', 'estado', 'ubicacion', 'precio'];
+
   displayedUserColumns: string[] = ['nombre', 'email', 'roles'];
-  dataSourcePropiedades = new MatTableDataSource<Propiedad>();
   dataSourceUsuarios = new MatTableDataSource<Usuario>();
 
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
-  private readonly logoutUseCase = inject(LogoutUseCase);
   private readonly authSession = inject(AuthStorageAdapter);
+  public readonly sesionService = inject(SesionService);
 
   private readonly listarPropiedades = inject(ListarPropiedadesUseCase);
   private readonly eliminarPropiedad = inject(EliminarPropiedadUseCase);
@@ -112,7 +110,6 @@ export class AdminDashboardComponent implements OnInit {
   refrescarListado(): void {
     this.listarPropiedades.execute().subscribe(propiedades => {
       this.propiedades = propiedades;
-      this.dataSourcePropiedades.data = propiedades;
     });
   }
 
@@ -121,7 +118,6 @@ export class AdminDashboardComponent implements OnInit {
       this.usuarios = this.esAgente
         ? usuarios.filter(u => this.esCliente(u))
         : usuarios;
-
       this.dataSourceUsuarios.data = this.usuarios;
     });
   }
@@ -151,9 +147,7 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.refrescarUsuarios();
-      }
+      if (result) this.refrescarUsuarios();
     });
   }
 
@@ -166,9 +160,7 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.refrescarUsuarios();
-      }
+      if (result) this.refrescarUsuarios();
     });
   }
 
@@ -213,14 +205,6 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  logout(): void {
-    this.logoutUseCase.execute();
-    this.snackBar.open(AppTexts.LOGOUT, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['snack-success']
-    });
-  }
-
   esCliente(usuario: Usuario): boolean {
     return usuario.roles.some(r =>
       typeof r === 'string' ? r === 'ROLE_CLIENTE' : r.nombre === 'ROLE_CLIENTE'
@@ -234,9 +218,7 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.refrescarListado();
-      }
+      if (result) this.refrescarListado();
     });
   }
 }

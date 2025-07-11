@@ -5,22 +5,17 @@
   <div class="dashboard__section dashboard__section--panel dashboard__section--welcome">
     <div class="dashboard__header">
       <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
-
       <div class="dashboard__actions dashboard__actions--right">
-        <button
-          mat-icon-button
-          class="btn btn--icon btn--warn"
-          (click)="logout()"
-          matTooltip="Cerrar sesión"
-          aria-label="Cerrar sesión"
-        >
+        <button mat-icon-button class="btn btn--icon btn--warn"
+                (click)="sesionService.logout()" matTooltip="Cerrar sesión"
+                aria-label="Cerrar sesión">
           <mat-icon>logout</mat-icon>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 📋 Propiedades -->
+  <!-- 📋 Propiedades registradas -->
   <div class="dashboard__section dashboard__section--panel">
     <div class="dashboard__section-title">
       📋 <span>Propiedades registradas</span>
@@ -33,37 +28,18 @@
       </button>
     </div>
 
-    <ng-template #estadoTemplate let-row>
-      <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
-        {{ row.estado | estado }}
-      </span>
-    </ng-template>
-
-    <ng-template #precioTemplate let-row>
-      {{ row.precio | precioMoneda }}
-    </ng-template>
-
-    <app-dashboard-table
-      [dataSource]="dataSourcePropiedades"
-      [displayedColumns]="displayedColumns"
-      [columnDefs]="[
-        { key: 'titulo', label: 'Título' },
-        { key: 'tipo', label: 'Tipo' },
-        { key: 'estado', label: 'Estado' },
-        { key: 'ubicacion', label: 'Ubicación' },
-        { key: 'precio', label: 'Precio' }
-      ]"
-      [customTemplates]="{ estado: estadoTemplate, precio: precioTemplate }"
+    <app-tabla-propiedades
+      [propiedades]="propiedades"
+      [mostrarAcciones]="true"
+      [pageSize]="5"
+      [pageSizeOptions]="[5,10,20]"
       [emptyMessage]="'No hay propiedades registradas aún.'"
-      [showActions]="true"
-      [showDelete]="true"
-      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)"
       (editar)="editarPropiedad($event)"
-    >
-    </app-dashboard-table>
+      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)">
+    </app-tabla-propiedades>
   </div>
 
-  <!-- 👥 Usuarios -->
+  <!-- 👥 Usuarios registrados -->
   <div class="dashboard__section dashboard__section--panel">
     <div class="dashboard__section-title">
       👥 <span>Usuarios registrados</span>
@@ -93,8 +69,7 @@
       [showActions]="true"
       [showDelete]="true"
       (editar)="editarUsuario($event)"
-      (eliminar)="eliminarUsuario($event.id!)"
-    >
+      (eliminar)="eliminarUsuario($event.id!)">
     </app-dashboard-table>
   </div>
 
