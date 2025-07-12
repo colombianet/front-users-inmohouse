@@ -5,16 +5,20 @@ import { Usuario } from '@domain/models/user.model';
 import { UsuarioRepository } from '@domain/repositories/usuario.repository';
 import { environment } from 'environments/environment';
 
-@Injectable({ providedIn: 'root' })
-export class UsuarioHttpService extends UsuarioRepository {
+@Injectable({
+  providedIn: 'root'
+})
+export class UsuarioHttpService implements UsuarioRepository {
   private readonly baseUrl = `${environment.apiBaseUrl}/users`;
 
-  constructor(private http: HttpClient) {
-    super();
-  }
+  constructor(private http: HttpClient) {}
 
   listar(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(this.baseUrl);
+  }
+
+  listarClientes(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.baseUrl}/por-rol/ROLE_CLIENTE`);
   }
 
   crear(usuario: Usuario): Observable<Usuario> {
@@ -29,7 +33,11 @@ export class UsuarioHttpService extends UsuarioRepository {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  listarClientes(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(`${this.baseUrl}/clientes`);
+  getAll(): Observable<Usuario[]> {
+    return this.listar();
+  }
+
+  getPorRol(rol: string): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.baseUrl}/por-rol/${rol}`);
   }
 }

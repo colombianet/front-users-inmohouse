@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { EstadoPipe } from '@shared/pipes/estado.pipe';
 import { PrecioMonedaPipe } from '@shared/pipes/precio-moneda.pipe';
 import { Propiedad } from '@domain/models/propiedad.model';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-tabla-propiedades',
@@ -19,6 +21,8 @@ import { Propiedad } from '@domain/models/propiedad.model';
     MatPaginatorModule,
     MatIconModule,
     MatButtonModule,
+    MatChipsModule,
+    MatTooltipModule,
     EstadoPipe,
     PrecioMonedaPipe
   ],
@@ -33,6 +37,8 @@ export class TablaPropiedadesComponent implements AfterViewInit {
   @Input() pageSizeOptions: number[] = [5, 10, 20];
   @Output() editar = new EventEmitter<Propiedad>();
   @Output() eliminar = new EventEmitter<Propiedad>();
+  @Output() asignar = new EventEmitter<Propiedad>();
+  @Output() desasignar = new EventEmitter<Propiedad>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -49,5 +55,14 @@ export class TablaPropiedadesComponent implements AfterViewInit {
 
   ngOnChanges(): void {
     this.dataSource.data = this.propiedades || [];
+  }
+
+  asignarAgenteDesdeTabla(propiedad: Propiedad): void {
+    console.log('Propiedad a asignar:', propiedad);
+    this.asignar.emit(propiedad);
+  }
+
+  desasignarAgenteDesdeTabla(propiedad: Propiedad): void {
+    this.desasignar.emit(propiedad);
   }
 }

@@ -8,9 +8,8 @@
     <div class="dashboard__header">
       <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
       <div class="dashboard__actions dashboard__actions--right">
-        <button mat-icon-button class="btn btn--icon btn--warn"
-                (click)="sesionService.logout()" matTooltip="Cerrar sesión"
-                aria-label="Cerrar sesión">
+        <button mat-icon-button class="btn btn--icon btn--warn" (click)="sesionService.logout()"
+          matTooltip="Cerrar sesión" aria-label="Cerrar sesión">
           <mat-icon>logout</mat-icon>
         </button>
       </div>
@@ -20,25 +19,20 @@
   <!-- 📋 Propiedades -->
   <div class="dashboard__section dashboard__section--panel">
     <div class="dashboard__section-title">📋 <span>Propiedades registradas</span></div>
-
     <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
         <mat-icon>add</mat-icon>
         Nueva propiedad
       </button>
     </div>
-
     <mat-spinner *ngIf="isCargandoPropiedades"></mat-spinner>
 
-    <app-tabla-propiedades
-      *ngIf="!isCargandoPropiedades && propiedades.length > 0"
-      [propiedades]="propiedades"
-      [mostrarAcciones]="true"
-      [pageSize]="5"
-      [pageSizeOptions]="[5, 10, 20]"
-      [emptyMessage]="'No hay propiedades registradas aún.'"
-      (editar)="editarPropiedad($event)"
-      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)">
+    <!-- Aquí está el componente actualizado -->
+    <app-tabla-propiedades *ngIf="!isCargandoPropiedades && propiedades.length > 0" [propiedades]="propiedades"
+      [mostrarAcciones]="true" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"
+      [emptyMessage]="'No hay propiedades registradas aún.'" (editar)="editarPropiedad($event)"
+      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)" (asignar)="asignarPropiedadDesdeTabla($event)"
+      (desasignar)="desasignarPropiedad($event)">
     </app-tabla-propiedades>
 
     <div class="mensaje-vacio" *ngIf="!isCargandoPropiedades && propiedades.length === 0">
@@ -63,20 +57,13 @@
 
     <mat-spinner *ngIf="isCargandoUsuarios"></mat-spinner>
 
-    <app-dashboard-table
-      *ngIf="!isCargandoUsuarios && usuarios.length > 0"
-      [dataSource]="dataSourceUsuarios"
-      [displayedColumns]="displayedUserColumns"
-      [columnDefs]="[
+    <app-dashboard-table *ngIf="!isCargandoUsuarios && usuarios.length > 0" [dataSource]="dataSourceUsuarios"
+      [displayedColumns]="displayedUserColumns" [columnDefs]="[
         { key: 'nombre', label: 'Nombre' },
         { key: 'email', label: 'Email' },
         { key: 'roles', label: 'Roles' }
-      ]"
-      [customTemplates]="{ roles: rolesTemplate }"
-      [emptyMessage]="'No hay usuarios registrados aún.'"
-      [showActions]="true"
-      [showDelete]="true"
-      (editar)="editarUsuario($event)"
+      ]" [customTemplates]="{ roles: rolesTemplate }" [emptyMessage]="'No hay usuarios registrados aún.'"
+      [showActions]="true" [showDelete]="true" (editar)="editarUsuario($event)"
       (eliminar)="eliminarUsuario($event.id!)">
     </app-dashboard-table>
 

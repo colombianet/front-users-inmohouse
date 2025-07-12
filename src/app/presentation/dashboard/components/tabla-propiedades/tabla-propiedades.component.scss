@@ -72,6 +72,26 @@
   }
 }
 
+.estado-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+}
+
+// Chip visual para el agente asignado
+.chip-agente {
+  font-size: 0.7rem;
+  font-weight: 400;
+  background-color: #f1f1f1;
+  color: #555;
+  border-radius: $border-radius;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 mat-paginator {
   margin-top: 1rem;
   display: block;

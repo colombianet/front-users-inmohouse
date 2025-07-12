@@ -30,4 +30,14 @@ export class PropiedadHttpService extends PropiedadRepository {
   listarPropiedadesDisponibles(): Observable<Propiedad[]> {
     return this.http.get<Propiedad[]>(`${this.baseUrl}/cliente/disponibles`);
   }
+
+  asignarAgente(idPropiedad: number, idAgente: number): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/propiedades/${idPropiedad}/asignar-agente`, {
+      agenteId: idAgente
+    });
+  }
+
+  desasignarAgente(idPropiedad: number): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/propiedades/${idPropiedad}/desasignar-agente`, {});
+  }
 }

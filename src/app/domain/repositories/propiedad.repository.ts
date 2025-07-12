@@ -6,4 +6,6 @@ export abstract class PropiedadRepository {
   abstract crear(propiedad: Propiedad): Observable<Propiedad>;
   abstract eliminar(id: number): Observable<void>;
   abstract listarPropiedadesDisponibles(): Observable<Propiedad[]>;
+  abstract asignarAgente(idPropiedad: number, idAgente: number): Observable<void>;
+  abstract desasignarAgente(idPropiedad: number): Observable<void>;
 }

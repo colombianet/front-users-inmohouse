@@ -15,9 +15,15 @@
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef> Estado </th>
         <td mat-cell *matCellDef="let row">
-          <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
-            {{ row.estado | estado }}
-          </span>
+          <div class="estado-wrapper">
+            <span class="dashboard__estado dashboard__estado--{{ row.estado | lowercase }}">
+              {{ row.estado | estado }}
+            </span>
+            <!-- Etiqueta del agente si está asignado -->
+            <mat-chip *ngIf="row.agente" class="chip-agente" selected>
+              {{ row.agente.nombre }}
+            </mat-chip>
+          </div>
         </td>
       </ng-container>
 
@@ -41,6 +47,15 @@
             <button mat-icon-button color="warn" (click)="eliminar.emit(row)" matTooltip="Eliminar">
               <mat-icon>delete</mat-icon>
             </button>
+            <!-- Botón para asignar agente -->
+            <button mat-icon-button color="primary" (click)="asignarAgenteDesdeTabla(row)" matTooltip="Asignar agente"
+              *ngIf="row.estado === 'DISPONIBLE' && !row.agente">
+              <mat-icon>person_add</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="desasignarAgenteDesdeTabla(row)"
+              matTooltip="Desasignar agente" *ngIf="row.agente">
+              <mat-icon>person_remove</mat-icon>
+            </button>
           </div>
         </td>
       </ng-container>
@@ -50,10 +65,7 @@
     </table>
   </div>
 
-  <mat-paginator
-    [pageSize]="pageSize"
-    [pageSizeOptions]="pageSizeOptions"
-    showFirstLastButtons>
+  <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" showFirstLastButtons>
   </mat-paginator>
 
   <div class="tabla__vacia" *ngIf="propiedades.length === 0">

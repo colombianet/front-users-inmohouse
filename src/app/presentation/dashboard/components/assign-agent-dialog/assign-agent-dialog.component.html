@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Asignar agente</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <mat-label>Seleccionar agente</mat-label>
+    <mat-select [(ngModel)]="agenteId">
+      <mat-option *ngFor="let agente of agentes" [value]="agente.id">
+        {{ agente.nombre }} - {{ agente.email }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="!agenteId" (click)="asignar()">
+    Asignar
+  </button>
+</mat-dialog-actions>

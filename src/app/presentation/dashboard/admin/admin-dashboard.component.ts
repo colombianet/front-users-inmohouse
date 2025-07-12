@@ -26,6 +26,8 @@ import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapte
 import { SesionService } from '@application/services/sesion.service';
 import { MaterialModule } from '@shared/material.module';
 import { ADMIN_PROVIDERS } from './admin-dashboard.providers';
+import { AssignAgentDialogComponent } from '../components/assign-agent-dialog/assign-agent-dialog.component';
+import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -68,7 +70,7 @@ export class AdminDashboardComponent implements OnInit {
 
   esAgente = this.authSession.esAgente();
 
-  constructor() {
+  constructor(private propiedadRepo: PropiedadRepository) {
     this.nombre = this.authSession.getNombre();
 
     this.router.events.subscribe(event => {
@@ -200,6 +202,52 @@ export class AdminDashboardComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) this.refrescarListado();
+    });
+  }
+
+  asignarPropiedadDesdeTabla(propiedad: Propiedad): void {
+    const dialogRef = this.dialog.open(AssignAgentDialogComponent, {
+      width: '500px',
+      data: { propiedad }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.refrescarListado();
+        this.snackBar.open('✅ Agente asignado correctamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['snack-success']
+        });
+      }
+    });
+  }
+
+  // ✅ Validación reutilizable para evitar desasignar sin agente
+  private verificarAgente(propiedad: Propiedad): boolean {
+    const tieneAgente = propiedad.agente !== null && propiedad.agente !== undefined;
+
+    if (!tieneAgente) {
+      this.snackBar.open('⚠️ La propiedad ya no tiene agente asignado', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      });
+    }
+
+    return tieneAgente;
+  }
+
+  // ✅ Flujo completo de desasignación con verificación y mensaje contextual
+  desasignarPropiedad(propiedad: Propiedad): void {
+    if (!this.verificarAgente(propiedad)) return;
+
+    const nombreAgente = propiedad.agente?.nombre;
+
+    this.propiedadRepo.desasignarAgente(propiedad.id!).subscribe(() => {
+      this.snackBar.open(`👤 Se ha desasignado a ${nombreAgente}`, 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      });
+      this.refrescarListado();
     });
   }
 }

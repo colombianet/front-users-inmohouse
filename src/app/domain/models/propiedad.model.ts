@@ -1,3 +1,5 @@
+import { Usuario } from "./user.model";
+
 export interface Propiedad {
   id?: number;
   titulo: string;
@@ -8,4 +10,5 @@ export interface Propiedad {
   estado: string;
   agenteId?: number;
   clienteId?: number | null;
+  agente?: Usuario;
 }
