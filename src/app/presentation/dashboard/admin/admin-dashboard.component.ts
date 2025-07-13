@@ -10,25 +10,25 @@ import { Propiedad } from '@domain/models/propiedad.model';
 import { Usuario } from '@domain/models/user.model';
 
 import { PropertyFormComponent } from '../components/property-form/property-form.component';
-import { UserFormComponent } from '../components/user-form/user-form.component';
-import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
 import { TablaPropiedadesComponent } from '../components/tabla-propiedades/tabla-propiedades.component';
 import { AgenteResumenComponent } from '../components/agente-resumen/agente-resumen.component';
 
 import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
-
-import { ListarPropiedadesUseCase } from '@application/use-cases/propiedad/listar-propiedades.usecase';
-import { EliminarPropiedadUseCase } from '@application/use-cases/propiedad/eliminar-propiedad.usecase';
-import { ListarUsuariosUseCase } from '@application/use-cases/usuario/listar-usuarios.usecase';
-import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
-import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
-
-import { SesionService } from '@application/services/sesion.service';
 import { MaterialModule } from '@shared/material.module';
+
+import { EliminarPropiedadUseCase } from '@application/use-cases/propiedad/eliminar-propiedad.usecase';
+
+import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapter';
+import { SesionService } from '@application/services/sesion.service';
 import { ADMIN_PROVIDERS } from './admin-dashboard.providers';
-import { AssignAgentDialogComponent } from '../components/assign-agent-dialog/assign-agent-dialog.component';
-import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
+
+import { AdminPropiedadService } from './admin/services/admin-propiedad.service';
+import { AdminUsuarioService } from './admin/services/admin-usuario.service';
+import { AdminResumenService } from './admin/services/admin-resumen.service';
+
+import { esCliente } from './admin/utils/roles.utils';
+import { AdminSyncService } from './admin/services/admin-sync.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -66,16 +66,17 @@ export class AdminDashboardComponent implements OnInit {
   private readonly router = inject(Router);
   public readonly sesionService = inject(SesionService);
 
-  private readonly listarPropiedades = inject(ListarPropiedadesUseCase);
   private readonly eliminarPropiedad = inject(EliminarPropiedadUseCase);
-  private readonly listarUsuarios = inject(ListarUsuariosUseCase);
-  private readonly eliminarUsuarioUseCase = inject(EliminarUsuarioUseCase);
+
+  private readonly propiedadService = inject(AdminPropiedadService);
+  private readonly usuarioService = inject(AdminUsuarioService);
+  private readonly resumenService = inject(AdminResumenService);
+  private readonly syncService = inject(AdminSyncService);
 
   esAgente = this.authSession.esAgente();
 
-  constructor(private propiedadRepo: PropiedadRepository) {
+  constructor() {
     this.nombre = this.authSession.getNombre();
-
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) this.isGlobalLoading = true;
       if (event instanceof NavigationEnd) this.isGlobalLoading = false;
@@ -87,56 +88,17 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private actualizarEstado(): void {
-    this.refrescarListado();
-    this.refrescarUsuarios();
-    setTimeout(() => {
-      this.generarResumenDesdeFrontend();
-    }, 100);
-  }
-
-  private generarResumenDesdeFrontend(): void {
-    const conteoPorAgente = new Map<string, number>();
-
-    this.usuarios
-      .filter(u => this.esAgenteUsuario(u))
-      .forEach(agente => {
-        conteoPorAgente.set(agente.nombre, 0);
-      });
-
-    this.propiedades.forEach(propiedad => {
-      const nombre = propiedad.agente?.nombre;
-      if (nombre && conteoPorAgente.has(nombre)) {
-        conteoPorAgente.set(nombre, (conteoPorAgente.get(nombre) || 0) + 1);
-      }
-    });
-
-    this.resumenAgentes = Array.from(conteoPorAgente.entries()).map(([agente, cantidad]) => ({
-      agente,
-      cantidad
-    }));
-  }
-
-  private esAgenteUsuario(usuario: Usuario): boolean {
-    return usuario.roles.some(r =>
-      typeof r === 'string' ? r === 'ROLE_AGENTE' : r.nombre === 'ROLE_AGENTE'
-    );
-  }
-
-  refrescarListado(): void {
     this.isCargandoPropiedades = true;
-    this.listarPropiedades.execute().subscribe(propiedades => {
-      this.propiedades = propiedades;
-      this.isCargandoPropiedades = false;
-    });
-  }
-
-  refrescarUsuarios(): void {
     this.isCargandoUsuarios = true;
-    this.listarUsuarios.execute().subscribe(usuarios => {
-      this.usuarios = this.esAgente
-        ? usuarios.filter(u => this.esCliente(u))
-        : usuarios;
+
+    this.syncService.sincronizar().subscribe(({ usuarios, propiedades }) => {
+      this.usuarios = this.esAgente ? usuarios.filter(esCliente) : usuarios;
       this.dataSourceUsuarios.data = this.usuarios;
+
+      this.propiedades = propiedades;
+      this.resumenAgentes = this.resumenService.generarResumen(this.usuarios, this.propiedades);
+
+      this.isCargandoPropiedades = false;
       this.isCargandoUsuarios = false;
     });
   }
@@ -160,137 +122,37 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   abrirFormularioUsuario(): void {
-    const dialogRef = this.dialog.open(UserFormComponent, {
-      width: '600px',
-      data: { modo: 'crear' }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) this.actualizarEstado();
-    });
+    this.usuarioService.abrirFormularioUsuario(() => this.actualizarEstado());
   }
 
   editarUsuario(usuario: Usuario): void {
-    if (this.esAgente && !this.esCliente(usuario)) return;
-
-    const dialogRef = this.dialog.open(UserFormComponent, {
-      width: '600px',
-      data: { usuario, modo: 'editar' }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) this.actualizarEstado();
-    });
+    const puedeEditar = !(this.esAgente && !esCliente(usuario));
+    this.usuarioService.editarUsuario(usuario, puedeEditar, () => this.actualizarEstado());
   }
 
   eliminarUsuario(id: number): void {
     const usuario = this.usuarios.find(u => u.id === id);
-    if (this.esAgente && usuario && !this.esCliente(usuario)) return;
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: { mensaje: AppTexts.CONFIRM_DELETE_USER }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmado => {
-      if (confirmado) {
-        this.eliminarUsuarioUseCase.execute(id).subscribe(() => {
-          this.actualizarEstado();
-          this.snackBar.open(AppTexts.DELETE_USER_SUCCESS, 'Cerrar', {
-            duration: 3000,
-            panelClass: ['snack-success']
-          });
-        });
-      }
-    });
+    const puedeEliminar = !(this.esAgente && usuario && !esCliente(usuario));
+    if (usuario) {
+      this.usuarioService.confirmarEliminarUsuario(usuario, puedeEliminar, () => this.actualizarEstado());
+    }
   }
 
   eliminarPropiedadDesdeTabla(id: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: { mensaje: '¿Estás seguro de eliminar esta propiedad?' }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmado => {
-      if (confirmado) {
-        this.eliminarPropiedad.execute(id).subscribe(() => {
-          this.snackBar.open('✅ Propiedad eliminada correctamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['snack-success']
-          });
-          this.actualizarEstado();
-        });
-      }
+    this.propiedadService.eliminarPropiedad(id, this.eliminarPropiedad.execute.bind(this.eliminarPropiedad), () => {
+      this.actualizarEstado();
     });
   }
 
   editarPropiedad(propiedad: Propiedad): void {
-    const dialogRef = this.dialog.open(PropertyFormComponent, {
-      width: '600px',
-      data: { propiedad, modo: 'editar' }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) this.actualizarEstado();
-    });
+    this.propiedadService.abrirFormularioEdicion(propiedad, () => this.actualizarEstado());
   }
 
   asignarPropiedadDesdeTabla(propiedad: Propiedad): void {
-    const dialogRef = this.dialog.open(AssignAgentDialogComponent, {
-      width: '500px',
-      data: { propiedad }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmado => {
-      if (confirmado) {
-        this.actualizarEstado();
-        this.snackBar.open('✅ Agente asignado correctamente', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snack-success']
-        });
-      }
-    });
+    this.propiedadService.abrirAsignarDialog(propiedad, () => this.actualizarEstado());
   }
 
   desasignarPropiedad(propiedad: Propiedad): void {
-    if (!this.verificarAgente(propiedad)) return;
-
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        mensaje: `¿Estás seguro de desasignar a ${propiedad.agente?.nombre}?`
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmado => {
-      if (confirmado) {
-        this.propiedadRepo.desasignarAgente(propiedad.id!).subscribe(() => {
-          this.snackBar.open(`👤 Se ha desasignado a ${propiedad.agente?.nombre}`, 'Cerrar', {
-            duration: 3000,
-            panelClass: ['snack-warning']
-          });
-          this.actualizarEstado();
-        });
-      }
-    });
-  }
-
-  private verificarAgente(propiedad: Propiedad): boolean {
-    const tieneAgente = propiedad.agente !== null && propiedad.agente !== undefined;
-
-    if (!tieneAgente) {
-      this.snackBar.open('⚠️ La propiedad ya no tiene agente asignado', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snack-warning']
-      });
-    }
-
-    return tieneAgente;
-  }
-
-  private esCliente(usuario: Usuario): boolean {
-    return usuario.roles.some(r =>
-      typeof r === 'string' ? r === 'ROLE_CLIENTE' : r.nombre === 'ROLE_CLIENTE'
-    );
+    this.propiedadService.desasignarConConfirmacion(propiedad, () => this.actualizarEstado());
   }
 }

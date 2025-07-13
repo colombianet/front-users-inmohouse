@@ -13,6 +13,8 @@ import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuari
 import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
 import { ListarClientesUseCase } from '@application/use-cases/usuario/listar-clientes.usecase';
+import { AgenteSyncService } from './services/agente-sync.service';
+import { AgenteClientesService } from './services/agente-clientes.service';
 
 export const AGENTE_PROVIDERS = [
   ListarClientesUseCase,
@@ -22,6 +24,8 @@ export const AGENTE_PROVIDERS = [
   ListarPropiedadesUseCase,
   LogoutUseCase,
   SesionService,
+  AgenteClientesService,
+  AgenteSyncService,
   { provide: PropiedadRepository, useClass: PropiedadHttpService },
   { provide: UsuarioRepository, useClass: UsuarioHttpService },
   { provide: AuthSessionGateway, useClass: AuthStorageAdapter }

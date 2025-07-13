@@ -18,7 +18,7 @@ export class UsuarioHttpService implements UsuarioRepository {
   }
 
   listarClientes(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(`${this.baseUrl}/por-rol/ROLE_CLIENTE`);
+    return this.http.get<Usuario[]>(`${this.baseUrl}/clientes`);
   }
 
   crear(usuario: Usuario): Observable<Usuario> {
