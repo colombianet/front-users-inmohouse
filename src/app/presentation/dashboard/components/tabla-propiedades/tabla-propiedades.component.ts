@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  AfterViewInit
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -35,13 +42,13 @@ export class TablaPropiedadesComponent implements AfterViewInit {
   @Input() emptyMessage = 'No hay propiedades disponibles.';
   @Input() pageSize = 5;
   @Input() pageSizeOptions: number[] = [5, 10, 20];
+
   @Output() editar = new EventEmitter<Propiedad>();
   @Output() eliminar = new EventEmitter<Propiedad>();
   @Output() asignar = new EventEmitter<Propiedad>();
   @Output() desasignar = new EventEmitter<Propiedad>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
   columnas: string[] = ['titulo', 'tipo', 'estado', 'ubicacion', 'precio'];
   dataSource = new MatTableDataSource<Propiedad>();
 
@@ -58,11 +65,14 @@ export class TablaPropiedadesComponent implements AfterViewInit {
   }
 
   asignarAgenteDesdeTabla(propiedad: Propiedad): void {
-    console.log('Propiedad a asignar:', propiedad);
     this.asignar.emit(propiedad);
   }
 
   desasignarAgenteDesdeTabla(propiedad: Propiedad): void {
     this.desasignar.emit(propiedad);
+  }
+
+  esAsignable(p: Propiedad): boolean {
+    return p?.estado?.toUpperCase() === 'DISPONIBLE' && !p?.agente?.id;
   }
 }
