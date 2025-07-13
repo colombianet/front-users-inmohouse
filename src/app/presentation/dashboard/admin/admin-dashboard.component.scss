@@ -1,3 +1,7 @@
 @use 'variables' as *;
 @use 'dashboard';
 @use 'buttons';
+
+.dashboard__section--resumen-agente {
+  margin-top: 1rem;
+}

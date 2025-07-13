@@ -14,6 +14,7 @@ import { UserFormComponent } from '../components/user-form/user-form.component';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 import { DashboardTableComponent } from '../components/dashboard-table/dashboard-table.component';
 import { TablaPropiedadesComponent } from '../components/tabla-propiedades/tabla-propiedades.component';
+import { AgenteResumenComponent } from '../components/agente-resumen/agente-resumen.component';
 
 import { FormatearRolesPipe } from '@shared/pipes/formatear-roles.pipe';
 
@@ -40,7 +41,8 @@ import { PropiedadRepository } from '@domain/repositories/propiedad.repository';
     MaterialModule,
     DashboardTableComponent,
     TablaPropiedadesComponent,
-    FormatearRolesPipe
+    FormatearRolesPipe,
+    AgenteResumenComponent
   ],
   providers: ADMIN_PROVIDERS
 })
@@ -49,6 +51,7 @@ export class AdminDashboardComponent implements OnInit {
   nombre: string | null;
   propiedades: Propiedad[] = [];
   usuarios: Usuario[] = [];
+  resumenAgentes: { agente: string; cantidad: number }[] = [];
 
   displayedUserColumns: string[] = ['nombre', 'email', 'roles'];
   dataSourceUsuarios = new MatTableDataSource<Usuario>();
@@ -80,13 +83,47 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.actualizarEstado();
+  }
+
+  private actualizarEstado(): void {
     this.refrescarListado();
     this.refrescarUsuarios();
+    setTimeout(() => {
+      this.generarResumenDesdeFrontend();
+    }, 100);
+  }
+
+  private generarResumenDesdeFrontend(): void {
+    const conteoPorAgente = new Map<string, number>();
+
+    this.usuarios
+      .filter(u => this.esAgenteUsuario(u))
+      .forEach(agente => {
+        conteoPorAgente.set(agente.nombre, 0);
+      });
+
+    this.propiedades.forEach(propiedad => {
+      const nombre = propiedad.agente?.nombre;
+      if (nombre && conteoPorAgente.has(nombre)) {
+        conteoPorAgente.set(nombre, (conteoPorAgente.get(nombre) || 0) + 1);
+      }
+    });
+
+    this.resumenAgentes = Array.from(conteoPorAgente.entries()).map(([agente, cantidad]) => ({
+      agente,
+      cantidad
+    }));
+  }
+
+  private esAgenteUsuario(usuario: Usuario): boolean {
+    return usuario.roles.some(r =>
+      typeof r === 'string' ? r === 'ROLE_AGENTE' : r.nombre === 'ROLE_AGENTE'
+    );
   }
 
   refrescarListado(): void {
     this.isCargandoPropiedades = true;
-
     this.listarPropiedades.execute().subscribe(propiedades => {
       this.propiedades = propiedades;
       this.isCargandoPropiedades = false;
@@ -95,7 +132,6 @@ export class AdminDashboardComponent implements OnInit {
 
   refrescarUsuarios(): void {
     this.isCargandoUsuarios = true;
-
     this.listarUsuarios.execute().subscribe(usuarios => {
       this.usuarios = this.esAgente
         ? usuarios.filter(u => this.esCliente(u))
@@ -114,7 +150,7 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.componentInstance.propiedadCreada?.subscribe(() => {
-      this.refrescarListado();
+      this.actualizarEstado();
       dialogRef.close();
       this.snackBar.open('✅ Propiedad creada correctamente', 'Cerrar', {
         duration: 3000,
@@ -130,7 +166,7 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.refrescarUsuarios();
+      if (result) this.actualizarEstado();
     });
   }
 
@@ -143,7 +179,7 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.refrescarUsuarios();
+      if (result) this.actualizarEstado();
     });
   }
 
@@ -159,7 +195,7 @@ export class AdminDashboardComponent implements OnInit {
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
         this.eliminarUsuarioUseCase.execute(id).subscribe(() => {
-          this.refrescarUsuarios();
+          this.actualizarEstado();
           this.snackBar.open(AppTexts.DELETE_USER_SUCCESS, 'Cerrar', {
             duration: 3000,
             panelClass: ['snack-success']
@@ -182,16 +218,10 @@ export class AdminDashboardComponent implements OnInit {
             duration: 3000,
             panelClass: ['snack-success']
           });
-          this.refrescarListado();
+          this.actualizarEstado();
         });
       }
     });
-  }
-
-  esCliente(usuario: Usuario): boolean {
-    return usuario.roles.some(r =>
-      typeof r === 'string' ? r === 'ROLE_CLIENTE' : r.nombre === 'ROLE_CLIENTE'
-    );
   }
 
   editarPropiedad(propiedad: Propiedad): void {
@@ -201,7 +231,7 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.refrescarListado();
+      if (result) this.actualizarEstado();
     });
   }
 
@@ -213,7 +243,7 @@ export class AdminDashboardComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        this.refrescarListado();
+        this.actualizarEstado();
         this.snackBar.open('✅ Agente asignado correctamente', 'Cerrar', {
           duration: 3000,
           panelClass: ['snack-success']
@@ -222,7 +252,29 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  // ✅ Validación reutilizable para evitar desasignar sin agente
+  desasignarPropiedad(propiedad: Propiedad): void {
+    if (!this.verificarAgente(propiedad)) return;
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        mensaje: `¿Estás seguro de desasignar a ${propiedad.agente?.nombre}?`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.propiedadRepo.desasignarAgente(propiedad.id!).subscribe(() => {
+          this.snackBar.open(`👤 Se ha desasignado a ${propiedad.agente?.nombre}`, 'Cerrar', {
+            duration: 3000,
+            panelClass: ['snack-warning']
+          });
+          this.actualizarEstado();
+        });
+      }
+    });
+  }
+
   private verificarAgente(propiedad: Propiedad): boolean {
     const tieneAgente = propiedad.agente !== null && propiedad.agente !== undefined;
 
@@ -236,18 +288,9 @@ export class AdminDashboardComponent implements OnInit {
     return tieneAgente;
   }
 
-  // ✅ Flujo completo de desasignación con verificación y mensaje contextual
-  desasignarPropiedad(propiedad: Propiedad): void {
-    if (!this.verificarAgente(propiedad)) return;
-
-    const nombreAgente = propiedad.agente?.nombre;
-
-    this.propiedadRepo.desasignarAgente(propiedad.id!).subscribe(() => {
-      this.snackBar.open(`👤 Se ha desasignado a ${nombreAgente}`, 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snack-warning']
-      });
-      this.refrescarListado();
-    });
+  private esCliente(usuario: Usuario): boolean {
+    return usuario.roles.some(r =>
+      typeof r === 'string' ? r === 'ROLE_CLIENTE' : r.nombre === 'ROLE_CLIENTE'
+    );
   }
 }

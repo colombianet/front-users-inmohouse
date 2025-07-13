@@ -4,6 +4,7 @@
 
   <h1 class="dashboard__title">{{ title }}</h1>
 
+  <!-- 👋 Bienvenida -->
   <div class="dashboard__section dashboard__section--panel dashboard__section--welcome">
     <div class="dashboard__header">
       <p class="dashboard__subtitle">Bienvenido, {{ nombre }} 👋</p>
@@ -16,22 +17,43 @@
     </div>
   </div>
 
+  <!-- 📊 Resumen por agente -->
+  <div class="dashboard__section dashboard__section--panel dashboard__section--resumen-agente">
+    <div class="dashboard__section-title">📊 <span>Resumen por agente</span></div>
+
+    <app-agente-resumen
+      *ngIf="resumenAgentes.length > 0"
+      [resumen]="resumenAgentes">
+    </app-agente-resumen>
+
+    <div class="mensaje-vacio" *ngIf="resumenAgentes.length === 0">
+      No hay agentes registrados aún.
+    </div>
+  </div>
+
   <!-- 📋 Propiedades -->
   <div class="dashboard__section dashboard__section--panel">
     <div class="dashboard__section-title">📋 <span>Propiedades registradas</span></div>
+
     <div class="dashboard__actions dashboard__actions--right">
       <button mat-flat-button class="btn btn--primary" (click)="abrirFormulario()">
         <mat-icon>add</mat-icon>
         Nueva propiedad
       </button>
     </div>
+
     <mat-spinner *ngIf="isCargandoPropiedades"></mat-spinner>
 
-    <!-- Aquí está el componente actualizado -->
-    <app-tabla-propiedades *ngIf="!isCargandoPropiedades && propiedades.length > 0" [propiedades]="propiedades"
-      [mostrarAcciones]="true" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"
-      [emptyMessage]="'No hay propiedades registradas aún.'" (editar)="editarPropiedad($event)"
-      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)" (asignar)="asignarPropiedadDesdeTabla($event)"
+    <app-tabla-propiedades
+      *ngIf="!isCargandoPropiedades && propiedades.length > 0"
+      [propiedades]="propiedades"
+      [mostrarAcciones]="true"
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 20]"
+      [emptyMessage]="'No hay propiedades registradas aún.'"
+      (editar)="editarPropiedad($event)"
+      (eliminar)="eliminarPropiedadDesdeTabla($event.id!)"
+      (asignar)="asignarPropiedadDesdeTabla($event)"
       (desasignar)="desasignarPropiedad($event)">
     </app-tabla-propiedades>
 
@@ -57,13 +79,20 @@
 
     <mat-spinner *ngIf="isCargandoUsuarios"></mat-spinner>
 
-    <app-dashboard-table *ngIf="!isCargandoUsuarios && usuarios.length > 0" [dataSource]="dataSourceUsuarios"
-      [displayedColumns]="displayedUserColumns" [columnDefs]="[
+    <app-dashboard-table
+      *ngIf="!isCargandoUsuarios && usuarios.length > 0"
+      [dataSource]="dataSourceUsuarios"
+      [displayedColumns]="displayedUserColumns"
+      [columnDefs]="[
         { key: 'nombre', label: 'Nombre' },
         { key: 'email', label: 'Email' },
         { key: 'roles', label: 'Roles' }
-      ]" [customTemplates]="{ roles: rolesTemplate }" [emptyMessage]="'No hay usuarios registrados aún.'"
-      [showActions]="true" [showDelete]="true" (editar)="editarUsuario($event)"
+      ]"
+      [customTemplates]="{ roles: rolesTemplate }"
+      [emptyMessage]="'No hay usuarios registrados aún.'"
+      [showActions]="true"
+      [showDelete]="true"
+      (editar)="editarUsuario($event)"
       (eliminar)="eliminarUsuario($event.id!)">
     </app-dashboard-table>
 
@@ -72,9 +101,9 @@
     </div>
   </div>
 
-  <!-- 📊 Estadísticas -->
+  <!-- 📈 Estadísticas -->
   <div class="dashboard__section dashboard__section--panel">
-    <div class="dashboard__section-title">📊 <span>Estadísticas</span></div>
+    <div class="dashboard__section-title">📈 <span>Estadísticas</span></div>
 
     <button mat-stroked-button routerLink="/dashboard/admin/estadisticas" class="btn btn--outline">
       <mat-icon>bar_chart</mat-icon>

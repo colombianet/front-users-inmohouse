@@ -45,7 +45,7 @@
   <div class="estadisticas__grafica" *ngIf="!isLoading">
     <ngx-charts-bar-horizontal *ngIf="vista === 'agente'" [results]="propiedadesPorAgente" [scheme]="colorScheme"
       [xAxis]="true" [yAxis]="true" [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true"
-      [view]="[800, chartHeight]" xAxisLabel="Cantidad" yAxisLabel="Agente" [animations]="false">
+      [view]="[800, chartHeight]" xAxisLabel="Cantidad" yAxisLabel="Agente" [animations]="false"[tooltipDisabled]="false">
     </ngx-charts-bar-horizontal>
 
     <ngx-charts-bar-vertical *ngIf="vista === 'tipo'" [results]="propiedadesPorTipo" [scheme]="colorScheme"

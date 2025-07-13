@@ -1,0 +1,14 @@
+<div class="agente-resumen__container">
+  <mat-card
+    *ngFor="let item of resumen"
+    class="agente-resumen__card"
+    [ngClass]="{ 'agente-resumen__card--sin-asignadas': item.cantidad === 0 }"
+  >
+    <div class="agente-resumen__nombre">
+      👤 {{ sanitizarNombre(item.agente) }}
+    </div>
+    <div class="agente-resumen__contador">
+      {{ item.cantidad }} propiedades asignadas
+    </div>
+  </mat-card>
+</div>

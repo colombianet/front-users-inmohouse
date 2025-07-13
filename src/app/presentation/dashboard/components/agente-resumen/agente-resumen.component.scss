@@ -1,0 +1,33 @@
+.agente-resumen {
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  &__card {
+    flex: 1 1 240px;
+    padding: 1rem;
+    background-color: #fafafa;
+    border-left: 5px solid #2196f3;
+    transition: background-color 0.3s ease;
+
+    &--sin-asignadas {
+      border-left-color: #f44336;
+      background-color: #fff5f5;
+    }
+  }
+
+  &__nombre {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  &__contador {
+    font-size: 0.85rem;
+    color: #666;
+  }
+}
