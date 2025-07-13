@@ -8,10 +8,10 @@
       <ng-container *ngFor="let col of columnDefs" [matColumnDef]="col.key">
         <th mat-header-cell *matHeaderCellDef>{{ col.label }}</th>
         <td mat-cell *matCellDef="let row">
-          <ng-container *ngIf="customTemplates[col.key]; else defaultCell">
-            <ng-container *ngTemplateOutlet="customTemplates[col.key]; context: { $implicit: row }"></ng-container>
-          </ng-container>
-          <ng-template #defaultCell>{{ row[col.key] }}</ng-template>
+          <ng-container
+            [ngTemplateOutlet]="resolveTemplate(col.key)"
+            [ngTemplateOutletContext]="{ $implicit: row, col: col }"
+          ></ng-container>
         </td>
       </ng-container>
 
@@ -29,7 +29,6 @@
         </td>
       </ng-container>
 
-      <!-- Filas -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns.concat(showActions ? ['acciones'] : [])"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns.concat(showActions ? ['acciones'] : [])"></tr>
     </table>
@@ -41,5 +40,9 @@
     <div class="dashboard__table-empty">
       {{ emptyMessage }}
     </div>
+  </ng-template>
+
+  <ng-template #defaultCell let-row let-col="col">
+    {{ row[col.key] }}
   </ng-template>
 </mat-card>

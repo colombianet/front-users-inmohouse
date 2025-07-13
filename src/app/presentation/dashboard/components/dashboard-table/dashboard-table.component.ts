@@ -5,7 +5,8 @@ import {
   EventEmitter,
   ViewChild,
   AfterViewInit,
-  TemplateRef
+  TemplateRef,
+  ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -58,18 +59,25 @@ export class DashboardTableComponent<T> implements AfterViewInit {
   @Output() eliminar = new EventEmitter<T>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('defaultCell', { static: true }) defaultCell!: TemplateRef<any>;
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
     this.tryAttachPaginator();
+    this.cdr.detectChanges();
   }
 
   private tryAttachPaginator(): void {
     if (this._dataSource && this.paginator) {
       this._dataSource.paginator = this.paginator;
     } else {
-      // Reintenta en el siguiente ciclo si aún no está disponible
       setTimeout(() => this.tryAttachPaginator());
     }
+  }
+
+  resolveTemplate(key: string): TemplateRef<any> {
+    return this.customTemplates?.[key] ?? this.defaultCell;
   }
 
   onEditar(row: T): void {
