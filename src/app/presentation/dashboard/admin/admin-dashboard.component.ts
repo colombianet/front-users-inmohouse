@@ -23,12 +23,12 @@ import { AuthStorageAdapter } from '@infrastructure/adapters/auth-storage.adapte
 import { SesionService } from '@application/services/sesion.service';
 import { ADMIN_PROVIDERS } from './admin-dashboard.providers';
 
-import { AdminPropiedadService } from './admin/services/admin-propiedad.service';
-import { AdminUsuarioService } from './admin/services/admin-usuario.service';
-import { AdminResumenService } from './admin/services/admin-resumen.service';
+import { AdminPropiedadService } from './services/admin-propiedad.service';
+import { AdminUsuarioService } from './services/admin-usuario.service';
+import { AdminResumenService } from './services/admin-resumen.service';
 
-import { esCliente } from './admin/utils/roles.utils';
-import { AdminSyncService } from './admin/services/admin-sync.service';
+import { esCliente } from './utils/roles.utils';
+import { AdminSyncService } from './services/admin-sync.service';
 
 @Component({
   selector: 'app-admin-dashboard',

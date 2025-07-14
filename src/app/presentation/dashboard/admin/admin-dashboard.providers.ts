@@ -15,10 +15,10 @@ import { ListarUsuariosUseCase } from '@application/use-cases/usuario/listar-usu
 import { CrearUsuarioUseCase } from '@application/use-cases/usuario/crear-usuario.usecase';
 import { EditarUsuarioUseCase } from '@application/use-cases/usuario/editar-usuario.usecase';
 import { EliminarUsuarioUseCase } from '@application/use-cases/usuario/eliminar-usuario.usecase';
-import { AdminPropiedadService } from './admin/services/admin-propiedad.service';
-import { AdminUsuarioService } from './admin/services/admin-usuario.service';
-import { AdminResumenService } from './admin/services/admin-resumen.service';
-import { AdminSyncService } from './admin/services/admin-sync.service';
+import { AdminPropiedadService } from './services/admin-propiedad.service';
+import { AdminUsuarioService } from './services/admin-usuario.service';
+import { AdminResumenService } from './services/admin-resumen.service';
+import { AdminSyncService } from './services/admin-sync.service';
 
 export const ADMIN_PROVIDERS = [
   ListarPropiedadesUseCase,
