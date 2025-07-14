@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "resolveJsonModule": true,
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
@@ -25,7 +26,8 @@
       "@infrastructure/*": ["app/infrastructure/*"],
       "@presentation/*": ["app/presentation/*"],
       "@shared/*": ["app/shared/*"],
-      "@core/*": ["app/core/*"]
+      "@core/*": ["app/core/*"],
+      "environments/*": ["environments/*"]
     }
   },
   "angularCompilerOptions": {
